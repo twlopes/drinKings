@@ -9,18 +9,19 @@
 #import <Foundation/Foundation.h>
 #import "AQGridViewCell.h"
 #import "PlayerImageView.h"
+#import "GradientButton.h"
 
 @interface PlayerCellView : AQGridViewCell {
     PlayerImageView *_player;
     UIButton *_btnEdit;
-    UIButton *_btnDelete;
+    GradientButton *_btnDelete;
     
     BOOL _selected;
 }
 
 @property (nonatomic, retain) PlayerImageView * player;
 @property (nonatomic, retain) UIButton * btnEdit;
-@property (nonatomic, retain) UIButton * btnDelete;
+@property (nonatomic, retain) GradientButton * btnDelete;
 @property (nonatomic) BOOL selected;
 
 @end

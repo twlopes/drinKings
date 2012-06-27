@@ -92,10 +92,20 @@
         _playerSize = CGSizeMake(300.0*kCardRatio, 300.0);
     }
     
-    _btnPlay = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _btnPlay = [GradientButton buttonWithType:UIButtonTypeCustom];
+    [_btnPlay useSimpleOrangeStyle];
     [_btnPlay setTitle:@"Play" forState:UIControlStateNormal];
     _btnPlay.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     _btnPlay.frame = CGRectMake(20, h-(h/6), w-40, h/7);
+    
+    _btnPlay.titleLabel.textColor = [UIColor blackColor];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:16.0f];
+    }else{
+        _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:42.0f];
+    }
+    
     [_btnPlay addTarget:self action:@selector(play) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_btnPlay];
     
@@ -225,15 +235,15 @@
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Confirm"
                                                         message:[NSString stringWithFormat:@"Are you sure you want to delete '%@'?", aPlayer.name]
                                                        delegate:self
-                                              cancelButtonTitle:@"No"
-                                              otherButtonTitles:@"DELETE!", nil];
+                                              cancelButtonTitle:@"Delete"
+                                              otherButtonTitles:@"No", nil];
     
     alertView.tag = sender.tag;
     [alertView show];
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
-    if(buttonIndex==1){
+    if(buttonIndex==alertView.cancelButtonIndex){
         [self deleteItem:alertView.tag];
     }
 }
@@ -266,6 +276,7 @@
         
         hud.delegate = (id<MBProgressHUDDelegate>)self;
         hud.labelText = @"Deleted";
+        hud.userInteractionEnabled=NO;
         
         [hud show:YES];
         [hud hide:YES afterDelay:2];

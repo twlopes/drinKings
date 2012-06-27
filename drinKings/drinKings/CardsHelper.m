@@ -56,7 +56,7 @@
         
         rule.shortName = @"Give2";
         rule.name = @"Give 2 drinks";
-        rule.desc = @"Choose a player to have drink 2 fingers";
+        rule.desc = @"Choose a player to have 2 drinks";
         rule.giveable = [NSNumber numberWithInt:1];
         rule.holdable = [NSNumber numberWithBool:NO];
         rule.numberOfDrinks = [NSNumber numberWithInt:2];
@@ -67,7 +67,7 @@
         
         rule.shortName = @"Give3";
         rule.name = @"Give 3 drinks";
-        rule.desc = @"Choose a player to have drink 3 fingers";
+        rule.desc = @"Choose a player to have 3 drinks";
         rule.giveable = [NSNumber numberWithInt:1];
         rule.holdable = [NSNumber numberWithBool:NO];
         rule.numberOfDrinks = [NSNumber numberWithInt:3];
@@ -78,7 +78,7 @@
         
         rule.shortName = @"Give4";
         rule.name = @"Give 4 drinks";
-        rule.desc = @"Choose a player to have drink 4 fingers";
+        rule.desc = @"Choose a player to have 4 drinks";
         rule.giveable = [NSNumber numberWithInt:1];
         rule.holdable = [NSNumber numberWithBool:NO];
         rule.numberOfDrinks = [NSNumber numberWithInt:4];
@@ -176,11 +176,11 @@
         rule = (Rule *)[NSEntityDescription insertNewObjectForEntityForName:@"Rule"
                                                      inManagedObjectContext:moc];
         
-        rule.shortName = @"Shit";
-        rule.name = @"Shit";
-        rule.desc = @"Shit.";
+        rule.shortName = @"Floor";
+        rule.name = @"Floor!";
+        rule.desc = @"The last player to touch the floor has to drink.";
         rule.giveable = [NSNumber numberWithInt:1];
-        rule.holdable = [NSNumber numberWithBool:YES];
+        rule.holdable = [NSNumber numberWithBool:NO];
         rule.numberOfDrinks = [NSNumber numberWithInt:1];
         
         // jack

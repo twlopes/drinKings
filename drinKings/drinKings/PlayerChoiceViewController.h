@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "AQGridViewCell.h"
+#import "GradientButton.h"
 
 @interface PlayerChoiceViewController : UIViewController <AQGridViewDelegate, AQGridViewDataSource> {
     // Data
@@ -16,7 +17,7 @@
     
     // Interface
     AQGridView *_gv;
-    UIButton *_btnPlay;
+    GradientButton *_btnPlay;
     CGSize _playerSize;
     
     // edit

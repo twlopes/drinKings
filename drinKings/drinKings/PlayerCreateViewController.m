@@ -378,6 +378,7 @@
             // Set custom view mode
             hud.mode = MBProgressHUDModeDeterminate;
             hud.animationType = MBProgressHUDAnimationZoom;
+            hud.userInteractionEnabled=NO;
             
             hud.delegate = (id<MBProgressHUDDelegate>)self;
             hud.labelText = @"Saved";
@@ -483,6 +484,11 @@
                                                    inView:self.view
                                  permittedArrowDirections:UIPopoverArrowDirectionRight
                                                  animated:YES];*/
+                
+                DLog(@"1 %@", _ivPlayer);
+                DLog(@"2 %@", _viewBG);
+                DLog(@"3 %@", _popover);
+                
                 [_popover presentPopoverFromRect:_ivPlayer.frame
                                               inView:_viewBG
                             permittedArrowDirections:UIPopoverArrowDirectionRight

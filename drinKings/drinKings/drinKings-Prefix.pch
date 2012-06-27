@@ -28,6 +28,7 @@
     #import "AQGridView.h"
     //#import "AQGridViewCell.h"
     #import "NSManagedObjectContext-EasyFetch.h"
+#import "Skins.h"
 #endif
 
 /*

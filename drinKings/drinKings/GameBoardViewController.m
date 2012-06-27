@@ -289,13 +289,16 @@
     [self.view addSubview:_lblPlayerTurn];*/
     
     if(_btnQuit==nil){
-        _btnQuit = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        _btnQuit = [GradientButton buttonWithType:UIButtonTypeCustom];
     }
-    _btnQuit.frame = CGRectMake(w-h/kGameBoardDivisor, 2.5, h/kGameBoardDivisor-5, h/kGameBoardDivisor-5);
-    _btnQuit.backgroundColor = [UIColor redColor];
+    //_btnQuit.buttonColor = [Skins colorWithHexString:@"8c2b2b"]; // 8c2b2b
+    //_btnQuit.cornerRadius = 8;
+    [_btnQuit useRedDeleteStyle];
+    _btnQuit.frame = CGRectMake(w-h/kGameBoardDivisor, 2.5, h/kGameBoardDivisor-2.5, h/kGameBoardDivisor-5);
+    //_btnQuit.backgroundColor = [UIColor redColor];
     [_btnQuit setTitle:@"Quit" forState:UIControlStateNormal];
     //_btnQuit.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [_btnQuit addTarget:self action:@selector(quit) forControlEvents:UIControlEventTouchUpInside];
+    [_btnQuit addTarget:self action:@selector(touchQuit) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_btnQuit];
     
     // rule bg
@@ -324,7 +327,6 @@
     }
     _lblRuleTitle.textAlignment = UITextAlignmentCenter;
     
-    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         _lblRuleTitle.font = [UIFont fontWithName:@"Marker Felt" size:36.0];
         _lblRuleTitle.frame = CGRectMake(20, 10, _bgRule.frame.size.width-40, 50);
@@ -334,7 +336,7 @@
     }
     
     _lblRuleTitle.textColor = [UIColor blueColor];
-    _lblRuleTitle.numberOfLines=1;
+    _lblRuleTitle.numberOfLines=2;
     _lblRuleTitle.backgroundColor = [UIColor clearColor];
     [_bgRule addSubview:_lblRuleTitle];
     
@@ -700,6 +702,12 @@
         
         [self nextTurn];
     }
+    
+    if(alertView.tag==1){
+        if(buttonIndex==alertView.cancelButtonIndex){
+            [self quit];
+        }
+    }
 }
 
 - (void)updateDisplay{
@@ -776,6 +784,17 @@
                                                        delegate:self
                                               cancelButtonTitle:nil
                                               otherButtonTitles:@"Ok", nil];
+    
+    [alertView show];
+}
+
+- (void)touchQuit{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure you want to quit?"
+                                                        message:nil
+                                                       delegate:self
+                                              cancelButtonTitle:@"Quit"
+                                              otherButtonTitles:@"No", nil];
+    alertView.tag=1;
     
     [alertView show];
 }

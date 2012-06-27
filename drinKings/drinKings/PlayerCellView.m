@@ -25,9 +25,10 @@
     _player = [[PlayerImageView alloc] initWithFrame: frame];
     [self.contentView addSubview: _player];
     
-    _btnDelete = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [_btnDelete setTitle:@"X" forState:UIControlEventTouchUpInside];
-    _btnDelete.frame = CGRectMake(frame.size.width-15, -5, 30, 30);
+    _btnDelete = [GradientButton buttonWithType:UIButtonTypeCustom];
+    [_btnDelete useRedDeleteStyle];
+    [_btnDelete setTitle:@"X" forState:UIControlStateNormal];
+    _btnDelete.frame = CGRectMake(frame.size.width-25, -5, 30, 30);
     _btnDelete.hidden=YES;
     [self.contentView addSubview:_btnDelete];
     

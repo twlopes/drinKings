@@ -10,6 +10,7 @@
 #import "Player.h"
 #import "Card.h"
 #import "Game.h"
+#import "GradientButton.h"
 
 @interface GameBoardViewController : UIViewController {
     
@@ -28,7 +29,7 @@
     
     UIImageView *_ivPlayer;
     UILabel *_lblPlayerTurn;
-    UIButton *_btnQuit;
+    GradientButton *_btnQuit;
     
     UIImageView *_ivBG;
     UIImageView *_ivCurrentCard;
