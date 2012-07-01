@@ -28,6 +28,8 @@
 		865DBFC1158D598D00CE1B0D /* GameCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 865DBFC0158D598D00CE1B0D /* GameCard.m */; };
 		865DBFC4158D5B6800CE1B0D /* Rule.m in Sources */ = {isa = PBXBuildFile; fileRef = 865DBFC3158D5B6800CE1B0D /* Rule.m */; };
 		865DBFC7158D5ECD00CE1B0D /* GamePlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 865DBFC6158D5ECD00CE1B0D /* GamePlayerView.m */; };
+		867080E4159E861100613C7D /* HeldCardsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 867080E3159E861100613C7D /* HeldCardsView.m */; };
+		867080E9159E87F100613C7D /* PageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 867080E8159E87F100613C7D /* PageControl.m */; };
 		86A4CF8C150C461800A0D9FF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A4CF8B150C461800A0D9FF /* UIKit.framework */; };
 		86A4CF8E150C461800A0D9FF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A4CF8D150C461800A0D9FF /* Foundation.framework */; };
 		86A4CF96150C461800A0D9FF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 86A4CF94150C461800A0D9FF /* InfoPlist.strings */; };
@@ -61,7 +63,6 @@
 		86B13D42159ACD6A00819A1D /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 86B13D38159ACD6A00819A1D /* Icon-Small@2x.png */; };
 		86B13D43159ACD6A00819A1D /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 86B13D39159ACD6A00819A1D /* Icon.png */; };
 		86B13D44159ACD6A00819A1D /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 86B13D3A159ACD6A00819A1D /* Icon@2x.png */; };
-		86B13D4A159AD12100819A1D /* MATCGlossyButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 86B13D49159AD12100819A1D /* MATCGlossyButton.m */; };
 		86B13D4D159AD2FD00819A1D /* Skins.m in Sources */ = {isa = PBXBuildFile; fileRef = 86B13D4C159AD2FD00819A1D /* Skins.m */; };
 		86B13D51159AD47E00819A1D /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 86B13D50159AD47E00819A1D /* GradientButton.m */; };
 		86C3913915209D710046DF03 /* 12_hearts.png in Resources */ = {isa = PBXBuildFile; fileRef = 86C3910315209D710046DF03 /* 12_hearts.png */; };
@@ -164,6 +165,10 @@
 		865DBFC3158D5B6800CE1B0D /* Rule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rule.m; sourceTree = "<group>"; };
 		865DBFC5158D5ECD00CE1B0D /* GamePlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamePlayerView.h; sourceTree = "<group>"; };
 		865DBFC6158D5ECD00CE1B0D /* GamePlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GamePlayerView.m; sourceTree = "<group>"; };
+		867080E2159E861100613C7D /* HeldCardsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeldCardsView.h; sourceTree = "<group>"; };
+		867080E3159E861100613C7D /* HeldCardsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeldCardsView.m; sourceTree = "<group>"; };
+		867080E7159E87F100613C7D /* PageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageControl.h; sourceTree = "<group>"; };
+		867080E8159E87F100613C7D /* PageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageControl.m; sourceTree = "<group>"; };
 		86A4CF87150C461800A0D9FF /* drinKings.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = drinKings.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86A4CF8B150C461800A0D9FF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		86A4CF8D150C461800A0D9FF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -221,8 +226,6 @@
 		86B13D38159ACD6A00819A1D /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small@2x.png"; sourceTree = "<group>"; };
 		86B13D39159ACD6A00819A1D /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		86B13D3A159ACD6A00819A1D /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
-		86B13D48159AD12100819A1D /* MATCGlossyButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MATCGlossyButton.h; sourceTree = "<group>"; };
-		86B13D49159AD12100819A1D /* MATCGlossyButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MATCGlossyButton.m; sourceTree = "<group>"; };
 		86B13D4B159AD2FD00819A1D /* Skins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Skins.h; sourceTree = "<group>"; };
 		86B13D4C159AD2FD00819A1D /* Skins.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Skins.m; sourceTree = "<group>"; };
 		86B13D4F159AD47E00819A1D /* GradientButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
@@ -344,8 +347,19 @@
 				8628FB3E151B2D2000184351 /* GameBoardViewController.m */,
 				865DBFC5158D5ECD00CE1B0D /* GamePlayerView.h */,
 				865DBFC6158D5ECD00CE1B0D /* GamePlayerView.m */,
+				867080E2159E861100613C7D /* HeldCardsView.h */,
+				867080E3159E861100613C7D /* HeldCardsView.m */,
 			);
 			name = Game;
+			sourceTree = "<group>";
+		};
+		867080E6159E87E700613C7D /* Page Control */ = {
+			isa = PBXGroup;
+			children = (
+				867080E7159E87F100613C7D /* PageControl.h */,
+				867080E8159E87F100613C7D /* PageControl.m */,
+			);
+			name = "Page Control";
 			sourceTree = "<group>";
 		};
 		86A4CF7C150C461800A0D9FF = {
@@ -454,8 +468,8 @@
 		86A4CFD6150C5AC100A0D9FF /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				867080E6159E87E700613C7D /* Page Control */,
 				86B13D4E159AD46700819A1D /* Gradient Buttons */,
-				86B13D47159AD11300819A1D /* MATCGlossyButtons */,
 				8604EB4C1514BB3A006244AC /* MBProgressHUD */,
 				86A4D00A150C618400A0D9FF /* Grid View */,
 				86A4CFE5150C5FC100A0D9FF /* Easy Fetch */,
@@ -580,15 +594,6 @@
 				86B13D3A159ACD6A00819A1D /* Icon@2x.png */,
 			);
 			name = Icons;
-			sourceTree = "<group>";
-		};
-		86B13D47159AD11300819A1D /* MATCGlossyButtons */ = {
-			isa = PBXGroup;
-			children = (
-				86B13D48159AD12100819A1D /* MATCGlossyButton.h */,
-				86B13D49159AD12100819A1D /* MATCGlossyButton.m */,
-			);
-			name = MATCGlossyButtons;
 			sourceTree = "<group>";
 		};
 		86B13D4E159AD46700819A1D /* Gradient Buttons */ = {
@@ -809,9 +814,10 @@
 				865DBFC1158D598D00CE1B0D /* GameCard.m in Sources */,
 				865DBFC4158D5B6800CE1B0D /* Rule.m in Sources */,
 				865DBFC7158D5ECD00CE1B0D /* GamePlayerView.m in Sources */,
-				86B13D4A159AD12100819A1D /* MATCGlossyButton.m in Sources */,
 				86B13D4D159AD2FD00819A1D /* Skins.m in Sources */,
 				86B13D51159AD47E00819A1D /* GradientButton.m in Sources */,
+				867080E4159E861100613C7D /* HeldCardsView.m in Sources */,
+				867080E9159E87F100613C7D /* PageControl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

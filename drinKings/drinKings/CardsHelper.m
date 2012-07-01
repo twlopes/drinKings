@@ -292,7 +292,7 @@
                 }
                 
                 if(i==10){
-                    card.rule = [RulesHelper ruleWithShortName:@"Shit"];
+                    card.rule = [RulesHelper ruleWithShortName:@"Floor"];
                 }
                 
                 if(i==11){

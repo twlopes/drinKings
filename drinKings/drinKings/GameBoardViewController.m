@@ -13,6 +13,7 @@
 #import "Rule.h"
 #import "CardsHelper.h"
 #import "GamePlayerView.h"
+#import "HeldCardsView.h"
 
 #define kGameBoardDivisor 10
 
@@ -263,6 +264,7 @@
         
         gpView.ivPlayer.backgroundColor = [UIColor grayColor];
         gpView.lblPlayer.text = @"Turn: 1";
+        [gpView.btnPlayer addTarget:self action:@selector(touchPlayer:) forControlEvents:UIControlEventTouchUpInside];
         
         [self.view addSubview:gpView];
         
@@ -498,6 +500,11 @@
     DLog(@"~");
     
     //UIButton *btn = (UIButton*)sender;
+    HeldCardsView *hcv = [[HeldCardsView alloc] init];
+    hcv.delegate=self;
+    hcv.userInteractionEnabled=NO;
+    [self.view addSubview:hcv];
+    [self.view bringSubviewToFront:hcv];
 }
 
 - (void)selectCard:(UIButton*)sender{
@@ -559,6 +566,63 @@
         [self endGame];
     }*/
 }
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    // rule dismissed
+    float w;
+    float h;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        w = self.view.frame.size.width;
+        h = self.view.frame.size.height;
+    }else{
+        if (self.view.frame.size.width < self.view.frame.size.height){
+            w = self.view.frame.size.height;
+            h = self.view.frame.size.width;
+        }else{
+            w = self.view.frame.size.width;
+            h = self.view.frame.size.height;
+        }
+    }
+    
+    if(alertView.tag==10){
+        if(_ivCurrentCard!=nil){
+            [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                             animations:^(void) {
+                                 DLog(@"animate remove card");
+                                 
+                                 CGRect frame = _ivCurrentCard.frame;
+                                 frame.origin.y = h;
+                                 _ivCurrentCard.frame = frame;
+                             }
+                             completion:^(BOOL finished) {
+                                 DLog(@"all done");
+                                 [_ivCurrentCard removeFromSuperview];
+                             }];
+        }
+        
+        [self nextTurn];
+    }
+    
+    if(alertView.tag==1){
+        if(buttonIndex==alertView.cancelButtonIndex){
+            [self quit];
+        }
+    }
+}
+
+- (void)touchQuit{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure you want to quit?"
+                                                        message:nil
+                                                       delegate:self
+                                              cancelButtonTitle:@"Quit"
+                                              otherButtonTitles:@"No", nil];
+    alertView.tag=1;
+    
+    [alertView show];
+}
+
+#pragma mark - Actions
 
 - (void)displayCard:(UIButton*)sender{
     float w;
@@ -666,49 +730,7 @@
     //[self nextTurn];
 }
 
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
-    // rule dismissed
-    float w;
-    float h;
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        w = self.view.frame.size.width;
-        h = self.view.frame.size.height;
-    }else{
-        if (self.view.frame.size.width < self.view.frame.size.height){
-            w = self.view.frame.size.height;
-            h = self.view.frame.size.width;
-        }else{
-            w = self.view.frame.size.width;
-            h = self.view.frame.size.height;
-        }
-    }
-    
-    if(alertView.tag==10){
-        if(_ivCurrentCard!=nil){
-            [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
-                             animations:^(void) {
-                                 DLog(@"animate remove card");
-                                 
-                                 CGRect frame = _ivCurrentCard.frame;
-                                 frame.origin.y = h;
-                                 _ivCurrentCard.frame = frame;
-                             }
-                             completion:^(BOOL finished) {
-                                 DLog(@"all done");
-                                 [_ivCurrentCard removeFromSuperview];
-                             }];
-        }
-        
-        [self nextTurn];
-    }
-    
-    if(alertView.tag==1){
-        if(buttonIndex==alertView.cancelButtonIndex){
-            [self quit];
-        }
-    }
-}
+
 
 - (void)updateDisplay{
     if([_currentGame.players count]>0){
@@ -788,16 +810,7 @@
     [alertView show];
 }
 
-- (void)touchQuit{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure you want to quit?"
-                                                        message:nil
-                                                       delegate:self
-                                              cancelButtonTitle:@"Quit"
-                                              otherButtonTitles:@"No", nil];
-    alertView.tag=1;
-    
-    [alertView show];
-}
+
 
 - (void)quit{
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
