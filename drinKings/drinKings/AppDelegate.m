@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-
+#import "SplashViewController.h"
 #import "MainViewController.h"
 #import "PlayerChoiceViewController.h"
 #import "CardsHelper.h"
@@ -28,7 +28,14 @@ static AppDelegate *sharedInstance;
     // Override point for customization after application launch.
     //UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[MainViewController alloc] init]];
     
-    UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[PlayerChoiceViewController alloc] init]];
+    [TestFlight takeOff:@"da7a12714a76721432ffe50b5b15b903_NzM5MzMyMDEyLTA2LTA2IDAzOjEwOjIwLjU4NzIyNw"];
+    
+#ifdef TESTING
+    [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+#endif
+    
+    /*UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[PlayerChoiceViewController alloc] init]];*/
+    UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[SplashViewController alloc] init]];
     
     [CardsHelper setupCards];
     

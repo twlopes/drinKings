@@ -10,7 +10,6 @@
 #import "AppDelegate.h"
 #import "Player.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import "MBProgressHUD.h"
 #import "CardsHelper.h"
 
 @implementation PlayerCreateViewController
@@ -159,6 +158,16 @@
     
     [self registerNotifications];
     
+    _changed=NO;
+    
+    /*self.navigationItem.backBarButtonItem.target = self;
+    self.navigationItem.backBarButtonItem.action = @selector(backButtonDidPressed:);*/
+    
+    self.navigationItem.leftBarButtonItem =
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemDone
+                                                   target: self
+                                                  action: @selector(backButtonDidPressed:)]; 
+    
     float w;
     float h;
     
@@ -195,6 +204,10 @@
     }
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [hud hide:NO];
+    hud.delegate=nil;
+}
 
 - (void)viewDidUnload
 {
@@ -324,6 +337,15 @@
     DLog(@"~");
     [textField resignFirstResponder];
     
+    if(_player!=nil && ![textField.text isEqualToString:_player.name]){
+        _changed=YES;
+        
+        self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel
+                                                      target: self
+                                                      action: @selector(backButtonDidPressed:)]; 
+    }
+    
     return YES;
 }
 
@@ -361,14 +383,24 @@
             NSData *imageData = UIImagePNGRepresentation(_image);
             _player.photo = imageData;
         }else if(_ivPlayer.image==nil){
-            _player.photo = nil;
+            NSData *imageData = UIImagePNGRepresentation([UIImage imageNamed:@"defaultUser.png"]);
+            _player.photo = imageData;
         }
         
         NSError *mocerror;
         if (![moc save:&mocerror]) {
             NSLog(@"Whoops, couldn't save: %@", [mocerror localizedDescription]);
         }else{
-            MBProgressHUD* hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+            _changed=NO;
+            
+            self.navigationItem.leftBarButtonItem =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemDone
+                                                          target: self
+                                                          action: @selector(backButtonDidPressed:)]; 
+            
+            if(hud==nil){
+                hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+            }
             [self.navigationController.view addSubview:hud];
             
             // The sample image is based on the work by http://www.pixelpressicons.com, http://creativecommons.org/licenses/by/2.5/ca/
@@ -401,6 +433,31 @@
 												  otherButtonTitles:@"Ok", nil];
 		
 		[alertView show];
+    }
+}
+
+- (void)backButtonDidPressed:(id)sender{
+    DLog(@"~");
+    
+    if(_changed){
+        // warn
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Forget something?"
+															message:@"Are you sure you want to leave without saving?"
+														   delegate:self
+												  cancelButtonTitle:@"Yes"
+												  otherButtonTitles:@"Wait...", nil];
+		alertView.tag=50;
+		[alertView show];
+    }else{
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    if(alertView.tag==50){
+        if(buttonIndex==alertView.cancelButtonIndex){
+            [self.navigationController popViewControllerAnimated:YES];
+        }
     }
 }
 
@@ -467,11 +524,10 @@
             _picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             //_picker.mediaTypes =[UIImagePickerController availableMediaTypesForSourceType:_picker.sourceType];   
             _picker.delegate = self;
-            _picker.allowsEditing=NO;
+            _picker.allowsEditing=YES;
             //picker.allowsImageEditing = NO;
             
             // if iphone
-            
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
                 [self.navigationController presentModalViewController:_picker animated:YES];
             }else{
@@ -537,14 +593,56 @@
             _picker.mediaTypes =[UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera]; 
             _picker.allowsEditing=YES;
             _picker.delegate = (id<UIImagePickerControllerDelegate>)self;
+            
             [self.navigationController presentModalViewController:_picker animated:YES];
+            return;
+            
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+                [self.navigationController presentModalViewController:_picker animated:YES];
+            }else{
+                _popover = [[UIPopoverController alloc] initWithContentViewController:_picker];
+                //self.popoverController = popover;          
+                _popover.delegate = (id<UIPopoverControllerDelegate>)self;
+                /*[self.popover presentPopoverFromRect:CGRectMake((self.view.frame.size.width/2), (self.view.frame.size.height/4), 100, 100)
+                 inView:self.view
+                 permittedArrowDirections:UIPopoverArrowDirectionRight
+                 animated:YES];*/
+                
+                DLog(@"1 %@", _ivPlayer);
+                DLog(@"2 %@", _viewBG);
+                DLog(@"3 %@", _popover);
+                
+                [_popover presentPopoverFromRect:_ivPlayer.frame
+                                          inView:_viewBG
+                        permittedArrowDirections:UIPopoverArrowDirectionRight
+                                        animated:YES];
+            }
         }else if((buttonIndex==2 && actionSheet.destructiveButtonIndex!=-1) || (buttonIndex==1 && actionSheet.destructiveButtonIndex==-1)){
             _picker = [[UIImagePickerController alloc] init];
             _picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             _picker.mediaTypes =[UIImagePickerController availableMediaTypesForSourceType:_picker.sourceType]; 
             _picker.delegate = (id<UIImagePickerControllerDelegate>)self;
             _picker.allowsEditing = YES;
-            [self.navigationController presentModalViewController:_picker animated:YES];
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+                [self.navigationController presentModalViewController:_picker animated:YES];
+            }else{
+                _popover = [[UIPopoverController alloc] initWithContentViewController:_picker];
+                //self.popoverController = popover;          
+                _popover.delegate = (id<UIPopoverControllerDelegate>)self;
+                /*[self.popover presentPopoverFromRect:CGRectMake((self.view.frame.size.width/2), (self.view.frame.size.height/4), 100, 100)
+                 inView:self.view
+                 permittedArrowDirections:UIPopoverArrowDirectionRight
+                 animated:YES];*/
+                
+                DLog(@"1 %@", _ivPlayer);
+                DLog(@"2 %@", _viewBG);
+                DLog(@"3 %@", _popover);
+                
+                [_popover presentPopoverFromRect:_ivPlayer.frame
+                                          inView:_viewBG
+                        permittedArrowDirections:UIPopoverArrowDirectionRight
+                                        animated:YES];
+            }
         }else if((buttonIndex==3 && actionSheet.destructiveButtonIndex!=-1) || (buttonIndex==2 && actionSheet.destructiveButtonIndex==-1)){
             
         }
@@ -622,6 +720,13 @@
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     DLog(@"mediaType %@", mediaType);
 	//if (CFStringCompare ((CFStringRef) mediaType, kUTTypeImage, 0) == kCFCompareEqualTo) {
+    
+    _changed=YES;
+    
+    self.navigationItem.leftBarButtonItem =
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel
+                                                  target: self
+                                                  action: @selector(backButtonDidPressed:)]; 
         
     if([info objectForKey:UIImagePickerControllerEditedImage]!=nil){
     
@@ -634,12 +739,29 @@
     
     [self refreshImage];
     
-    [self.navigationController dismissModalViewControllerAnimated:YES];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [self.navigationController dismissModalViewControllerAnimated:YES];
+    }else{
+        
+        if(imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera){
+            [self.navigationController dismissModalViewControllerAnimated:YES];
+        }else{
+            [_popover dismissPopoverAnimated:YES];
+        }
+    }
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)imagePicker{
     DLog(@"~");
-    [self.navigationController dismissModalViewControllerAnimated:YES];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [self.navigationController dismissModalViewControllerAnimated:YES];
+    }else{
+        if(imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera){
+            [self.navigationController dismissModalViewControllerAnimated:YES];
+        }else{
+            [_popover dismissPopoverAnimated:YES];
+        }
+    }
 }
 
 

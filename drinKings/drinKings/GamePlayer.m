@@ -1,13 +1,14 @@
 //
 //  GamePlayer.m
-//  drinkingcards
+//  drinKings
 //
-//  Created by Tristan Lopes on 17/03/12.
+//  Created by Tristan Lopes on 24/07/12.
 //  Copyright (c) 2012 Output DSJ. All rights reserved.
 //
 
 #import "GamePlayer.h"
 #import "Game.h"
+#import "GameCard.h"
 #import "Player.h"
 
 
@@ -18,5 +19,6 @@
 @dynamic playerTurn;
 @dynamic game;
 @dynamic player;
+@dynamic cards;
 
 @end

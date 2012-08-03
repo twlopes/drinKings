@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1171" systemVersion="11E53" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1487" systemVersion="12A269" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Card" representedClassName="Card" syncable="YES">
         <attribute name="frontImage" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="number" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="suit" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="deck" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Deck" inverseName="cards" inverseEntity="Deck" syncable="YES"/>
         <relationship name="games" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="GameCard" inverseName="card" inverseEntity="GameCard" syncable="YES"/>
         <relationship name="rule" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Rule" inverseName="cards" inverseEntity="Rule" syncable="YES"/>
+    </entity>
+    <entity name="Deck" representedClassName="Deck" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="cards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Card" inverseName="deck" inverseEntity="Card" syncable="YES"/>
     </entity>
     <entity name="Game" representedClassName="Game" syncable="YES">
         <attribute name="turn" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
@@ -22,12 +27,13 @@
         <attribute name="tag" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="card" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Card" inverseName="games" inverseEntity="Card" syncable="YES"/>
         <relationship name="game" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Game" inverseName="cards" inverseEntity="Game" syncable="YES"/>
-        <relationship name="player" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Player" syncable="YES"/>
+        <relationship name="player" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="GamePlayer" inverseName="cards" inverseEntity="GamePlayer" syncable="YES"/>
     </entity>
     <entity name="GamePlayer" representedClassName="GamePlayer" syncable="YES">
         <attribute name="drinksGiven" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="drinksTaken" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="playerTurn" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="cards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="GameCard" inverseName="player" inverseEntity="GameCard" syncable="YES"/>
         <relationship name="game" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Game" inverseName="players" inverseEntity="Game" syncable="YES"/>
         <relationship name="player" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Player" inverseName="games" inverseEntity="Player" syncable="YES"/>
     </entity>
@@ -46,11 +52,12 @@
         <relationship name="cards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Card" inverseName="rule" inverseEntity="Card" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Card" positionX="160" positionY="192" width="128" height="120"/>
-        <element name="Game" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="GameCard" positionX="160" positionY="192" width="128" height="150"/>
-        <element name="GamePlayer" positionX="160" positionY="192" width="128" height="120"/>
-        <element name="Player" positionX="160" positionY="192" width="128" height="90"/>
-        <element name="Rule" positionX="160" positionY="192" width="128" height="150"/>
+        <element name="Card" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Game" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="GameCard" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="GamePlayer" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Player" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Rule" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Deck" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

@@ -17,6 +17,8 @@
 + (void)setupCards{
     DLog(@"~");
     
+    // this will setup the standard deck with standard rules
+    
     NSManagedObjectContext *moc/* = [ac managedObjectContext]*/;
     
     if (moc == nil) { 
@@ -34,6 +36,7 @@
     NSError *error = nil;
     NSArray *array = [moc executeFetchRequest:request error:&error];
     
+    // if there are no rules then set up the standards
     if([array count]==0){
         
         Rule *rule;
@@ -46,7 +49,7 @@
         rule.name = @"Make a Rule";
         rule.desc = @"Create a rule that all the players must obey until another ace is drawn and a new rule is made. The new rule voids the previous rule.";
         rule.giveable = [NSNumber numberWithInt:1];
-        rule.holdable = [NSNumber numberWithBool:YES];
+        rule.holdable = [NSNumber numberWithBool:NO];
         rule.numberOfDrinks = [NSNumber numberWithInt:0];
         
         // give
@@ -123,7 +126,7 @@
         
         rule.shortName = @"Moose";
         rule.name = @"Moose!";
-        rule.desc = @"Whoever gets this card must immediately put their thumbs to their head with his/her fingers splayed, resembling moose horns. The last person to do this must drink.";
+        rule.desc = @"Everyone must immediately put their thumbs to their head with his/her fingers splayed, resembling moose horns. The last person to do this must drink.";
         rule.giveable = [NSNumber numberWithInt:1];
         rule.holdable = [NSNumber numberWithBool:NO];
         rule.numberOfDrinks = [NSNumber numberWithInt:1];
@@ -213,107 +216,165 @@
         rule.name = @"Social!";
         rule.desc = @"Everyone have a drink!";
         rule.giveable = [NSNumber numberWithInt:2];
-        rule.holdable = [NSNumber numberWithBool:YES];
+        rule.holdable = [NSNumber numberWithBool:NO];
         rule.numberOfDrinks = [NSNumber numberWithInt:1];
-    }
     
-    // loop through the suits
-    for(int suit=0; suit<4; suit++){
-        NSMutableString *s = [[NSMutableString alloc] init];
-        
-        if(suit==0){
-            [s appendString:@"Hearts"];
+    
+        // if there were no rules then lets get rid of any existing decks or cards
+        request = [[NSFetchRequest alloc] init];
+        [request setEntity:[NSEntityDescription entityForName:@"Deck"
+                                       inManagedObjectContext:moc]];
+        [request setIncludesPropertyValues:NO];
+        error = nil;
+        NSArray *deckArray = [moc executeFetchRequest:request error:&error];
+        for(NSManagedObject *deck in deckArray){
+            [moc deleteObject:deck];
         }
         
-        if(suit==1){
-            [s appendString:@"Spades"];
+        request = [[NSFetchRequest alloc] init];
+        [request setEntity:[NSEntityDescription entityForName:@"Card"
+                                       inManagedObjectContext:moc]];
+        [request setIncludesPropertyValues:NO];
+        error = nil;
+        NSArray *cardArray = [moc executeFetchRequest:request error:&error];
+        for(NSManagedObject *card in cardArray){
+            [moc deleteObject:card];
         }
         
-        if(suit==2){
-            [s appendString:@"Diamonds"];
-        }
+        [moc save:nil];
         
-        if(suit==3){
-            [s appendString:@"Clubs"];
-        }
         
-        // loop through cards
-        for(int i=1; i<=13; i++){
+        
+        // lets create the standard deck
+        Deck *deck = (Deck *)[NSEntityDescription insertNewObjectForEntityForName:@"Deck"
+                                                           inManagedObjectContext:moc];
+        deck.name = @"Standard";
+        
+        // loop through the suits
+        for(int suit=0; suit<4; suit++){
+            NSMutableString *s = [[NSMutableString alloc] init];
             
-            NSEntityDescription* entity = [NSEntityDescription entityForName:@"Card"
-                                                      inManagedObjectContext:moc];
-            NSFetchRequest* request = [[NSFetchRequest alloc] init];
-            [request setEntity:entity];
+            if(suit==0){
+                [s appendString:@"Hearts"];
+            }
             
-            [request setPredicate:[NSPredicate predicateWithFormat:@"suit = %@ AND number = %i", s, i]];
+            if(suit==1){
+                [s appendString:@"Spades"];
+            }
             
-            NSError *error = nil;
-            NSArray *cardArray = [moc executeFetchRequest:request error:&error];
+            if(suit==2){
+                [s appendString:@"Diamonds"];
+            }
             
-            if([cardArray count]==0){
-                DLog(@"creating %i %@", i, s);
-                Card *card = (Card *)[NSEntityDescription insertNewObjectForEntityForName:@"Card"
-                                                                     inManagedObjectContext:moc];
+            if(suit==3){
+                [s appendString:@"Clubs"];
+            }
+            
+            // loop through cards
+            for(int i=1; i<=13; i++){
                 
-                card.number = [NSNumber numberWithInt:i];
-                card.suit = s;
+                /*NSEntityDescription* entity = [NSEntityDescription entityForName:@"Card"
+                                                          inManagedObjectContext:moc];
+                NSFetchRequest* request = [[NSFetchRequest alloc] init];
+                [request setEntity:entity];
                 
-                if(i==1){
-                    // ace
-                    card.rule = [RulesHelper ruleWithShortName:@"Rule"];
-                }
+                [request setPredicate:[NSPredicate predicateWithFormat:@"suit = %@ AND number = %i", s, i]];
                 
-                if(i>=2 && i<=4){
-                    if([s isEqual:@"Hearts"] || [s isEqual:@"Diamonds"]){
-                        card.rule = [RulesHelper ruleWithShortName:[NSString stringWithFormat:@"Give%i", i]];
-                    }else{
-                        card.rule = [RulesHelper ruleWithShortName:[NSString stringWithFormat:@"Take%i", i]];
+                NSError *error = nil;
+                NSArray *cardArray = [moc executeFetchRequest:request error:&error];
+                
+                if([cardArray count]==0){*/
+                    DLog(@"creating %i %@", i, s);
+                    Card *card = (Card *)[NSEntityDescription insertNewObjectForEntityForName:@"Card"
+                                                                         inManagedObjectContext:moc];
+                    
+                    card.number = [NSNumber numberWithInt:i];
+                    card.suit = s;
+                card.deck = deck;
+                    
+                    if(i==1){
+                        // ace
+                        card.rule = [RulesHelper ruleWithShortName:@"Rule"];
                     }
-                }
+                    
+                    if(i>=2 && i<=4){
+                        if([s isEqual:@"Hearts"] || [s isEqual:@"Diamonds"]){
+                            card.rule = [RulesHelper ruleWithShortName:[NSString stringWithFormat:@"Give%i", i]];
+                        }else{
+                            card.rule = [RulesHelper ruleWithShortName:[NSString stringWithFormat:@"Take%i", i]];
+                        }
+                    }
+                    
+                    if(i==5){
+                        card.rule = [RulesHelper ruleWithShortName:@"Moose"];
+                    }
+                    
+                    if(i==6){
+                        card.rule = [RulesHelper ruleWithShortName:@"Nose"];
+                    }
+                    
+                    if(i==7){
+                        card.rule = [RulesHelper ruleWithShortName:@"Categories"];
+                    }
+                    
+                    if(i==8){
+                        card.rule = [RulesHelper ruleWithShortName:@"Never"];
+                    }
+                    
+                    if(i==9){
+                        card.rule = [RulesHelper ruleWithShortName:@"Rhyme"];
+                    }
+                    
+                    if(i==10){
+                        card.rule = [RulesHelper ruleWithShortName:@"Floor"];
+                    }
+                    
+                    if(i==11){
+                        card.rule = [RulesHelper ruleWithShortName:@"FamousMales"];
+                    }
+                    
+                    if(i==12){
+                        card.rule = [RulesHelper ruleWithShortName:@"FamousFemales"];
+                    }
+                    
+                    if(i==13){
+                        card.rule = [RulesHelper ruleWithShortName:@"Social"];
+                    }
+                /*}else{
+                    DLog(@"exists %i %@", i, s);
+                }*/
                 
-                if(i==5){
-                    card.rule = [RulesHelper ruleWithShortName:@"Moose"];
+                NSError *mocerror;
+                if (![moc save:&mocerror]) {
+                    NSLog(@"Whoops, couldn't save: %@", [mocerror localizedDescription]);
                 }
-                
-                if(i==6){
-                    card.rule = [RulesHelper ruleWithShortName:@"Nose"];
-                }
-                
-                if(i==7){
-                    card.rule = [RulesHelper ruleWithShortName:@"Categories"];
-                }
-                
-                if(i==8){
-                    card.rule = [RulesHelper ruleWithShortName:@"Never"];
-                }
-                
-                if(i==9){
-                    card.rule = [RulesHelper ruleWithShortName:@"Rhyme"];
-                }
-                
-                if(i==10){
-                    card.rule = [RulesHelper ruleWithShortName:@"Floor"];
-                }
-                
-                if(i==11){
-                    card.rule = [RulesHelper ruleWithShortName:@"FamousMales"];
-                }
-                
-                if(i==12){
-                    card.rule = [RulesHelper ruleWithShortName:@"FamousFemales"];
-                }
-                
-                if(i==13){
-                    card.rule = [RulesHelper ruleWithShortName:@"Social"];
-                }
-            }else{
-                DLog(@"exists %i %@", i, s);
             }
-            
-            NSError *mocerror;
-            if (![moc save:&mocerror]) {
-                NSLog(@"Whoops, couldn't save: %@", [mocerror localizedDescription]);
-            }
+        }
+        
+        // we will still create the jokers but give them nil on the rule so they can't be played
+        Card *card = (Card *)[NSEntityDescription insertNewObjectForEntityForName:@"Card"
+                                                           inManagedObjectContext:moc];
+        
+        card.number = @0;
+        card.suit = @"Red";
+        card.deck = deck;
+        card.rule = nil;
+        
+        NSError *mocerror;
+        if (![moc save:&mocerror]) {
+            NSLog(@"Whoops, couldn't save: %@", [mocerror localizedDescription]);
+        }
+        
+        card = (Card *)[NSEntityDescription insertNewObjectForEntityForName:@"Card"
+                                                     inManagedObjectContext:moc];
+        
+        card.number = @0;
+        card.suit = @"Black";
+        card.deck = deck;
+        card.rule = nil;
+        
+        if (![moc save:&mocerror]) {
+            NSLog(@"Whoops, couldn't save: %@", [mocerror localizedDescription]);
         }
     }
 }
@@ -322,27 +383,33 @@
     DLog(@"~ %@", card);
     NSMutableString *returnString=[[NSMutableString alloc] initWithString:@""];
     
-    if([card.number intValue]==1){
-        [returnString appendString:@"Ace of "];
-    }
+    if([card.number intValue]==0){
+        [returnString appendString:card.suit];
+        [returnString appendString:@" Joker"];
+    }else{
     
-    if([card.number intValue]>=2 && [card.number intValue]<=9){
-        [returnString appendFormat:@"%i of ", [card.number intValue]];
+        if([card.number intValue]==1){
+            [returnString appendString:@"Ace of "];
+        }
+        
+        if([card.number intValue]>=2 && [card.number intValue]<=9){
+            [returnString appendFormat:@"%i of ", [card.number intValue]];
+        }
+        
+        if([card.number intValue]==11){
+            [returnString appendString:@"Jack of "];
+        }
+        
+        if([card.number intValue]==12){
+            [returnString appendString:@"Queen of "];
+        }
+        
+        if([card.number intValue]==13){
+            [returnString appendString:@"King of "];
+        }
+        
+        [returnString appendString:card.suit];
     }
-    
-    if([card.number intValue]==11){
-        [returnString appendString:@"Jack of "];
-    }
-    
-    if([card.number intValue]==12){
-        [returnString appendString:@"Queen of "];
-    }
-    
-    if([card.number intValue]==13){
-        [returnString appendString:@"King of "];
-    }
-    
-    [returnString appendString:card.suit];
     
     return returnString;
 }
@@ -351,9 +418,13 @@
     //DLog(@"~");
     NSMutableString *imageString=[[NSMutableString alloc] initWithString:@""];
     
-    [imageString appendFormat:@"%i_%@.png", [card.number intValue], [card.suit lowercaseString]];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        [imageString appendFormat:@"%i_%@@2x.png", [card.number intValue], [card.suit lowercaseString]];
+    }else{
+        [imageString appendFormat:@"%i_%@.png", [card.number intValue], [card.suit lowercaseString]];
+    }
     
-    //DLog(@"%@", imageString);
+    DLog(@"%@", imageString);
     
     return [UIImage imageNamed:imageString];
 }

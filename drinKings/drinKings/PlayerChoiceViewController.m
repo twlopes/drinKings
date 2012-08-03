@@ -76,6 +76,8 @@
     
     //_arrayItems = [[NSMutableArray alloc] init];
     
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
     float w = self.view.frame.size.width;
     float h = self.view.frame.size.height;
     
@@ -101,7 +103,7 @@
     _btnPlay.titleLabel.textColor = [UIColor blackColor];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:16.0f];
+        _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:26.0f];
     }else{
         _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:42.0f];
     }
@@ -161,14 +163,32 @@
 #pragma mark Buttons
 
 - (void)play{
-    GameBoardViewController *board = [[GameBoardViewController alloc] init];
     
-    board.players = _chosenItems;
-    board.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    //self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    NSManagedObjectContext *moc;
+    if (moc == nil) {
+        moc = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+    }
     
-    //[self.navigationController pushViewController:board animated:YES];
-    [self.navigationController presentModalViewController:board animated:YES];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Deck" inManagedObjectContext:moc]];
+    [request setIncludesPropertyValues:NO];
+    NSError * error = nil;
+    NSArray * array = [moc executeFetchRequest:request error:&error];
+    
+    if([array count]==1){
+        GameBoardViewController *board = [[GameBoardViewController alloc] init];
+        
+        Deck *deck = [array objectAtIndex:0];
+        board.currentDeck = deck;
+        board.players = _chosenItems;
+        board.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        //self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        
+        //[self.navigationController pushViewController:board animated:YES];
+        [self.navigationController presentModalViewController:board animated:YES];
+    }else{
+        // need to get them to make a choice
+    }
 }
 
 - (void)addPlayer{
@@ -301,7 +321,12 @@
             }
         }
         
-        [_btnPlay setTitle:[NSString stringWithFormat:@"Play with %i players", [_chosenItems count]] forState:UIControlStateNormal];
+        if([_chosenItems count]==1){
+            [_btnPlay setTitle:[NSString stringWithFormat:@"Play with %i player", [_chosenItems count]] forState:UIControlStateNormal];
+        }else{
+        
+            [_btnPlay setTitle:[NSString stringWithFormat:@"Play with %i players", [_chosenItems count]] forState:UIControlStateNormal];
+        }
     }
 }
 
@@ -370,13 +395,18 @@
     if(index==0){
         cell.player.name.text = @"Create New Player";
         [cell.player.btnPlayer addTarget:self action:@selector(addPlayer) forControlEvents:UIControlEventTouchUpInside];
-        cell.player.image.image=nil;
+        cell.player.image.image=[UIImage imageNamed:@"defaultUser.png"];
+        cell.player.image.alpha = 0.5;
         [cell.player setBackgroundColor:[UIColor whiteColor]];
         cell.btnDelete.hidden=YES;
     }else{
+        
+        cell.player.image.alpha = 1.0;
+        
         Player *aPlayer = [_arrayItems objectAtIndex:index-1];
         
         cell.player.name.text = aPlayer.name;
+        
         cell.player.image.image = [UIImage imageWithData:aPlayer.photo];
         
         if([_chosenItems containsObject:aPlayer]){

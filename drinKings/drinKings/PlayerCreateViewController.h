@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "PlayerChoiceViewController.h"
+#import "MBProgressHUD.h"
 
 @class Player;
 
@@ -25,6 +26,10 @@
     
     Player *_player;
     PlayerChoiceViewController *_parent;
+    
+    bool _changed;
+    
+    MBProgressHUD* hud;
 }
 
 @property (nonatomic,retain) UIPopoverController *popover;

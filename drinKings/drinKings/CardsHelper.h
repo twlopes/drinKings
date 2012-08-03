@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "Card.h"
 #import "Game.h"
+#import "Deck.h"
 
 //#define kCardRatio 0.71428571428571f
 #define kCardRatio 0.6887052342f

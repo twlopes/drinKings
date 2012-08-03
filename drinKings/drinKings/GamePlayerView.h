@@ -16,6 +16,8 @@
     UILabel *_lblPlayer;
     UIView *_backgroundView;
     UIButton *_btnPlayer;
+    
+    UIImageView *_ivHeldCards;
 }
 
 @property (nonatomic, retain) GamePlayer *gamePlayer;
@@ -25,5 +27,6 @@
 @property (nonatomic, retain) UIButton *btnPlayer;
 
 - (void)updateCards;
+- (void)hasCards:(bool)result;
 
 @end

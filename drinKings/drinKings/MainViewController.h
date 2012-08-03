@@ -7,9 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "GradientButton.h"
 
 @interface MainViewController : UIViewController {
-
+    GradientButton *_btnPlay;
+    GradientButton *_btnAbout;
+    GradientButton *_btnHelp;
+    GradientButton *_btnDeck;
+    
+    UIImageView *_ivBG;
 }
 
 @end

@@ -22,11 +22,14 @@
         int border = frame.size.width/20;
         
         self.backgroundColor = [UIColor whiteColor];
+        self.autoresizesSubviews=YES;
+        self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
         _image = [[UIImageView alloc] initWithFrame:CGRectMake(border, border, frame.size.width-(border*2), frame.size.height-(border*2)-(border*5))];
         _image.backgroundColor = [UIColor lightGrayColor];
         _image.contentMode = UIViewContentModeScaleAspectFill;
         _image.clipsToBounds = YES;
+        _image.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self addSubview:_image];
         
         _name = [[UILabel alloc] initWithFrame:CGRectMake(border, _image.frame.size.height+(border*1.5), frame.size.width-(border*2), border*5)];
@@ -34,12 +37,14 @@
         _name.textAlignment = UITextAlignmentCenter;
         _name.backgroundColor = [UIColor clearColor];
         _name.numberOfLines=2;
+        _name.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self addSubview:_name];
         
         _btnPlayer = [UIButton buttonWithType:UIButtonTypeCustom];
         _btnPlayer.frame = frame;
         _btnPlayer.enabled=NO;
         _btnPlayer.backgroundColor = [UIColor clearColor];
+        _btnPlayer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         //[self addSubview:_btnPlayer];                                                    
     }
     return self;

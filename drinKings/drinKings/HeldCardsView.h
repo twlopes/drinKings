@@ -7,18 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Game.h"
 #import "GamePlayer.h"
 #import "PageControl.h"
+#import "GradientButton.h"
 
-@interface HeldCardsView : UIView {
+@interface HeldCardsView : UIView <PageControlDelegate, UIScrollViewDelegate> {
     __weak id _delegate;
     
     GamePlayer *_gamePlayer;
+    Game *_game;
+    NSArray *_cards;
     
     UIButton *_backgroundView; // covers whole screen
     UIView *_cardBackgroundView; // what everything else displays on
     
     UIButton *_btnClose;
+    GradientButton *_btnQuit;
     
     // player
     UIView *_playerBackgroundView;
@@ -26,14 +31,17 @@
     UILabel *_lblPlayer;
     
     // cards
-    UILabel *_lblRule;
-    UIButton *_btnRuleInfo;
     UIScrollView *_svCards;
     PageControl *_svPageControl;
-    UIButton *_btnPlay;
+    GradientButton *_btnPlay;
+    
+    // none
+    UILabel *_lblNone;
+    GradientButton *_btnNone;
 }
 
 @property (weak) id delegate;
 @property (nonatomic, retain) GamePlayer *gamePlayer;
+@property (nonatomic, retain) Game *game;
 
 @end

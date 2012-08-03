@@ -11,6 +11,10 @@
 #import "Card.h"
 #import "Game.h"
 #import "GradientButton.h"
+#import "GamePlayer.h"
+#import "GameCard.h"
+#import "PlayerImageView.h"
+#import "Deck.h"
 
 @interface GameBoardViewController : UIViewController {
     
@@ -18,9 +22,13 @@
     NSMutableArray *_players;
     
     // game items
+    Deck *_currentDeck;
     Game *_currentGame;
     Player *_currentPlayer;
+    GamePlayer *_currentGamePlayer;
+    
     Card *_currentCard;
+    GameCard *_currentGameCard;
     
     // gui
     // cheap gui
@@ -40,9 +48,26 @@
     UILabel *_lblRuleDesc;
     UIButton *_btnFade;
     
+    // next player popup
+    UIButton *_btnFadePlayer;
+    PlayerImageView *_nextPlayerView;
+    
     bool _turnAllowed;
+    bool _fadeAllowed;
+    bool _doNextTurn;
+    
+    bool _fadePlayerAllowed;
+    
+    bool _showingNextPlayer;
+    bool _animatingNextPlayer;
+    
+    bool _showingCard;
+    bool _animatingCard;
 }
 
 @property (nonatomic, retain) NSMutableArray *players;
+@property (nonatomic, retain) Card *currentCard;
+@property (nonatomic, retain) GameCard *currentGameCard;
+@property (nonatomic, retain) Deck *currentDeck;
 
 @end

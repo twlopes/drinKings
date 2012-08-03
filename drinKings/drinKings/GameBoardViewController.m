@@ -23,7 +23,7 @@
 
 @implementation GameBoardViewController
 
-@synthesize players=_players;
+@synthesize players=_players, currentCard=_currentCard, currentGameCard=_currentGameCard, currentDeck=_currentDeck;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -70,6 +70,39 @@
     } else {
         return UIInterfaceOrientationIsLandscape(interfaceOrientation);
     }
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    float w;
+    float h;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        w = self.view.frame.size.width;
+        h = self.view.frame.size.height;
+    }else{
+        if (self.view.frame.size.width < self.view.frame.size.height){
+            w = self.view.frame.size.height;
+            h = self.view.frame.size.width;
+        }else{
+            w = self.view.frame.size.width;
+            h = self.view.frame.size.height;
+        }
+    }
+    
+    if(_nextPlayerView==nil){
+        float nH = h/1.3;
+        float nW = nH*kCardRatio;
+        _nextPlayerView = [[PlayerImageView alloc] initWithFrame:CGRectMake(w/2-nW/2, h/2-nH/2, nW, nH)];
+        
+        _nextPlayerView.alpha=0;
+        _nextPlayerView.userInteractionEnabled=NO;
+        //_nextPlayerView.hidden=YES;
+        [self.view addSubview:_nextPlayerView];
+    }
+    
+    [self displayNextPlayer];
 }
 
 #pragma mark - Setup
@@ -134,6 +167,8 @@
         NSFetchRequest* request = [[NSFetchRequest alloc] init];
         [request setEntity:entity];
         
+        [request setPredicate:[NSPredicate predicateWithFormat:@"deck = %@ AND rule != %@", _currentDeck, nil]];
+        
         error = nil;
         NSArray *cardArray = [moc executeFetchRequest:request error:&error];
         
@@ -187,6 +222,7 @@
     if ([filteredArray count] > 0) {
         GamePlayer *gp = (GamePlayer*)[filteredArray objectAtIndex:0];
         _currentPlayer = gp.player;
+        _currentGamePlayer = gp;
     }
     
     NSError *mocerror;
@@ -195,6 +231,11 @@
     }
     
     _turnAllowed=YES;
+    _doNextTurn=YES;
+    _showingNextPlayer=NO;
+    _animatingNextPlayer=NO;
+    _showingCard=NO;
+    _animatingCard=NO;
 }
 
 - (void)drawBoard{
@@ -264,6 +305,7 @@
         
         gpView.ivPlayer.backgroundColor = [UIColor grayColor];
         gpView.lblPlayer.text = @"Turn: 1";
+        gpView.ivPlayer.image = [UIImage imageNamed:@"defaultUser.png"];
         [gpView.btnPlayer addTarget:self action:@selector(touchPlayer:) forControlEvents:UIControlEventTouchUpInside];
         
         [self.view addSubview:gpView];
@@ -336,8 +378,9 @@
         _lblRuleTitle.font = [UIFont fontWithName:@"Marker Felt" size:48.0];
         _lblRuleTitle.frame = CGRectMake(20, 45, _bgRule.frame.size.width-40, 50);
     }
-    
-    _lblRuleTitle.textColor = [UIColor blueColor];
+
+    //_lblRuleTitle.textColor = [UIColor blueColor];
+    _lblRuleTitle.textColor = [Skins colorWithHexString:@"0000A0"];
     _lblRuleTitle.numberOfLines=2;
     _lblRuleTitle.backgroundColor = [UIColor clearColor];
     [_bgRule addSubview:_lblRuleTitle];
@@ -359,7 +402,8 @@
     }
     
     _lblRuleDesc.numberOfLines=0;
-    _lblRuleDesc.textColor = [UIColor blueColor];
+    //_lblRuleDesc.textColor = [UIColor blueColor];
+    _lblRuleDesc.textColor = [Skins colorWithHexString:@"0000A0"];
     _lblRuleDesc.backgroundColor = [UIColor clearColor];
     [_bgRule addSubview:_lblRuleDesc];
     
@@ -372,6 +416,18 @@
     //_btnFade.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [_btnFade addTarget:self action:@selector(removeRule) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_btnFade];
+    
+    if(_btnFadePlayer==nil){
+        _btnFadePlayer = [UIButton buttonWithType:UIButtonTypeCustom];
+    }
+    _btnFadePlayer.frame = CGRectMake(0, 0, w, h);
+    _btnFadePlayer.hidden=YES;
+    _btnFadePlayer.backgroundColor = [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.65f];
+    //_btnFade.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [_btnFadePlayer addTarget:self action:@selector(removePlayer) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_btnFadePlayer];
+    
+    
     
     NSLog(@"Available fonts: %@", [UIFont familyNames]);
     
@@ -488,6 +544,25 @@
     [_currentGame.managedObjectContext save:nil];
 }
 
+#pragma mark - Held Cards
+
+- (void)heldCardsClose:(HeldCardsView*)hcv{
+    [hcv removeFromSuperview];
+}
+
+- (void)heldCardsPlay:(HeldCardsView*)hcv{
+    [self heldCardsClose:hcv];
+    
+    _turnAllowed=NO;
+    _doNextTurn=NO; // we dont want this to change players
+    
+    [self displayCard:nil];
+    
+    
+    // display rule
+    [self performSelector:@selector(displayRule) withObject:nil afterDelay:0.6f];
+}
+
 #pragma mark - Buttons
 
 - (void)touchDrawCard{
@@ -496,13 +571,52 @@
     //[self selectCard];
 }
 
-- (void)touchPlayer:(id)sender{
+- (void)touchPlayer:(UIButton*)btn{
     DLog(@"~");
     
+    float w;
+    float h;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        w = self.view.frame.size.width;
+        h = self.view.frame.size.height;
+    }else{
+        if (self.view.frame.size.width < self.view.frame.size.height){
+            w = self.view.frame.size.height;
+            h = self.view.frame.size.width;
+        }else{
+            w = self.view.frame.size.width;
+            h = self.view.frame.size.height;
+        }
+    }
+    
+    // get game player
+    GamePlayer *gp=nil;
+    
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"playerTurn" ascending:YES];
+    NSArray *players = [[_currentGame.players allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
+    
+    int i=0;
+    for(GamePlayer *p in players){
+        
+        if([p.playerTurn intValue]==btn.tag){
+            gp = p;
+            break;
+        }
+        i++;
+    }
+    
+    
     //UIButton *btn = (UIButton*)sender;
-    HeldCardsView *hcv = [[HeldCardsView alloc] init];
+    HeldCardsView *hcv = [[HeldCardsView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
     hcv.delegate=self;
-    hcv.userInteractionEnabled=NO;
+    
+    if(gp==nil){
+        [hcv setGame:_currentGame];
+    }else{
+        [hcv setGamePlayer:gp];
+    }
+    //hcv.userInteractionEnabled=NO;
     [self.view addSubview:hcv];
     [self.view bringSubviewToFront:hcv];
 }
@@ -511,7 +625,11 @@
     DLog(@"~");
     
     if(!_turnAllowed){
+        DLog(@"turn blocked");
         return;
+    }else{
+        DLog(@"turn allowed");
+        _turnAllowed=NO;
     }
     
     [self.view bringSubviewToFront:sender];
@@ -520,21 +638,24 @@
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"tag == %i", sender.tag];
     NSArray *filteredArray = [[_currentGame.cards allObjects] filteredArrayUsingPredicate:predicate];
     if([filteredArray count]>0){
+        
+        
         GameCard *gc = [filteredArray objectAtIndex:0];
         _currentCard = gc.card;
+        _currentGameCard = gc;
         
         if([gc.card.rule.holdable isEqualToNumber:[NSNumber numberWithBool:YES]]){
             gc.holding=[NSNumber numberWithBool:YES];
         }else{
             gc.played=[NSNumber numberWithBool:YES];
         }
-        gc.player = _currentPlayer;
+        gc.player = _currentGamePlayer;
         [gc.managedObjectContext save:nil];
         
         // display card
         [self displayCard:sender];
         
-        _turnAllowed=NO;
+        
         
         // display rule
         [self performSelector:@selector(displayRule) withObject:nil afterDelay:0.6f];
@@ -625,6 +746,14 @@
 #pragma mark - Actions
 
 - (void)displayCard:(UIButton*)sender{
+    DLog(@"~");
+    
+    if(_animatingCard || _showingCard){
+        return;
+    }
+    
+    _animatingCard=YES;
+    
     float w;
     float h;
     
@@ -686,6 +815,8 @@
 }
 
 - (void)displayRule{
+    DLog(@"~");
+    
     [self.view bringSubviewToFront:_btnFade];
     [self.view bringSubviewToFront:_bgRule];
     
@@ -703,6 +834,9 @@
     frame.origin.y = _lblRuleTitle.frame.origin.y+_lblRuleTitle.frame.size.height;
     _lblRuleDesc.frame = frame;
     
+    _btnFade.alpha=0;
+    _btnFade.hidden=NO;
+    
     [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionCurveEaseInOut
                      animations:^(void) {
                          DLog(@"animate bring in rule");
@@ -710,10 +844,13 @@
                          CGRect frame = _bgRule.frame;
                          frame.origin.y = frame.origin.y-frame.size.height;
                          _bgRule.frame = frame;
+                         _btnFade.alpha=1;
                      }
                      completion:^(BOOL finished) {
                          DLog(@"all done");
                          _btnFade.hidden=NO;
+                         _showingCard=YES;
+                         _animatingCard=NO;
                      }];
     
     /*UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:_currentCard.rule.name
@@ -730,7 +867,206 @@
     //[self nextTurn];
 }
 
+- (void)removeRule{
+    DLog(@"~");
+    
+    if(_animatingCard || !_showingCard){
+        return;
+    }
+    
+    /*if(!_fadeAllowed){
+        return;
+    }else{
+        _fadeAllowed=NO;
+    }*/
+    
+    float w;
+    float h;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        w = self.view.frame.size.width;
+        h = self.view.frame.size.height;
+    }else{
+        if (self.view.frame.size.width < self.view.frame.size.height){
+            w = self.view.frame.size.height;
+            h = self.view.frame.size.width;
+        }else{
+            w = self.view.frame.size.width;
+            h = self.view.frame.size.height;
+        }
+    }
+    
+    if(_ivCurrentCard!=nil){
+        _animatingCard=YES;
+        
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^(void) {
+                             DLog(@"animate remove card");
+                             
+                             CGRect frame = _ivCurrentCard.frame;
+                             
+                             if([_currentGameCard.holding isEqualToNumber:[NSNumber numberWithBool:YES]] && [_currentGameCard.played isEqualToNumber:[NSNumber numberWithBool:NO]]){
+                                 
+                                 if(_currentGamePlayer!=nil){
+                                     float gpViewWidth = (w-(h/kGameBoardDivisor))/[_currentGame.players count];
+                                     
+                                     frame.origin.y = h/kGameBoardDivisor/2;
+                                     frame.origin.x = (gpViewWidth*(float)[_currentGamePlayer.playerTurn intValue])+h/kGameBoardDivisor/1.5;
+                                 }else{
+                                     frame.origin.y = h/kGameBoardDivisor/2;
+                                     frame.origin.x = h/kGameBoardDivisor/1.5;
+                                 }
+                                 frame.size.height = 0;
+                                 frame.size.width = 0;
+                                 
+                             }else{
+                                 frame.origin.y = h;
+                             }
+                             _ivCurrentCard.frame = frame;
+                             
+                             frame = _bgRule.frame;
+                             frame.origin.y = h;
+                             _bgRule.frame = frame;
+                             
+                             if([_currentGame.players count]==0){
+                                 _btnFade.alpha=0;
+                             }
+                         }
+                         completion:^(BOOL finished) {
+                             DLog(@"all done");
+                             [_ivCurrentCard removeFromSuperview];
+                             _btnFade.hidden=YES;
+                             _btnFade.alpha=1;
+                             _showingCard=NO;
+                             _animatingCard=NO;
+                             [self nextTurn];
+                             if(!_doNextTurn){
+                                 _doNextTurn=YES; // allow turns to start happening again
+                                 _turnAllowed=YES;
+                             }
+                         }];
+    }else{
+        _showingCard=NO;
+        _animatingCard=NO;
+    }
+}
 
+- (void)displayNextPlayer{
+    DLog(@"~");
+    
+    if(_showingNextPlayer || _animatingNextPlayer){
+        DLog(@"%i %i", _showingNextPlayer, _animatingNextPlayer);
+        return;
+    }else{
+        DLog(@"allow next player");
+    }
+    
+    float w;
+    float h;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        w = self.view.frame.size.width;
+        h = self.view.frame.size.height;
+    }else{
+        if (self.view.frame.size.width < self.view.frame.size.height){
+            w = self.view.frame.size.height;
+            h = self.view.frame.size.width;
+        }else{
+            w = self.view.frame.size.width;
+            h = self.view.frame.size.height;
+        }
+    }
+    
+    if([_currentGame.players count]>0){
+    
+        _animatingNextPlayer=YES;
+        _btnFade.hidden=YES;
+        
+        [self.view bringSubviewToFront:_btnFadePlayer];
+        [self.view bringSubviewToFront:_nextPlayerView];
+        
+        _btnFadePlayer.hidden=NO;
+        
+        [_nextPlayerView.image setImage:[UIImage imageWithData:_currentGamePlayer.player.photo]];
+        _nextPlayerView.name.text = _currentGamePlayer.player.name;
+        //_nextPlayerView.btnPlayer.hidden=NO;
+        //_nextPlayerView.transform=CGAffineTransformMakeRotation(10000.0f);
+        
+        CGRect frame = _nextPlayerView.frame;
+        frame.origin.y = -frame.size.height;
+        
+        _nextPlayerView.frame = frame;
+        _nextPlayerView.alpha=0;
+        
+        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^(void) {
+                             DLog(@"animate bring in rule");
+                             
+                             CGRect frame = _nextPlayerView.frame;
+                             frame.origin.y = h/2 - frame.size.height/2;
+                             
+                             _nextPlayerView.frame = frame;
+                             _nextPlayerView.alpha=1;
+                             //_nextPlayerView.transform = CGAffineTransformMakeRotation(0);
+                         }
+                         completion:^(BOOL finished) {
+                             DLog(@"all done");
+                             _fadePlayerAllowed=YES;
+                             _showingNextPlayer=YES;
+                             _animatingNextPlayer=NO;
+                         }];
+    }else{
+        _turnAllowed=YES;
+    }
+}
+
+- (void)removePlayer{
+    DLog(@"~");
+    
+    if(!_showingNextPlayer || _animatingNextPlayer){
+        DLog(@"%i %i", _showingNextPlayer, _animatingNextPlayer);
+        return;
+    }else{
+        DLog(@"allow player removal");
+        _animatingNextPlayer=YES;
+    }
+    
+    float w;
+    float h;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        w = self.view.frame.size.width;
+        h = self.view.frame.size.height;
+    }else{
+        if (self.view.frame.size.width < self.view.frame.size.height){
+            w = self.view.frame.size.height;
+            h = self.view.frame.size.width;
+        }else{
+            w = self.view.frame.size.width;
+            h = self.view.frame.size.height;
+        }
+    }
+    
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^(void) {
+                         DLog(@"animate bring in rule");
+                         
+                         CGRect frame = _nextPlayerView.frame;
+                         frame.origin.y = -frame.size.height;
+                         _nextPlayerView.frame = frame;
+                         _btnFadePlayer.alpha=0;
+                         _nextPlayerView.alpha=0;
+                     }
+                     completion:^(BOOL finished) {
+                         DLog(@"all done");
+                         _btnFadePlayer.hidden=YES;
+                         _btnFadePlayer.alpha=1;
+                         _nextPlayerView.alpha=1;
+                         _showingNextPlayer=NO;
+                         _animatingNextPlayer=NO;
+                         _turnAllowed=YES;
+                     }];
+}
 
 - (void)updateDisplay{
     if([_currentGame.players count]>0){
@@ -746,6 +1082,15 @@
                 p.backgroundView.backgroundColor = [UIColor clearColor];
                 p.lblPlayer.textColor = [UIColor whiteColor];
             }
+            
+            NSPredicate *predicateHeldCards = [NSPredicate predicateWithFormat:@"holding = %@ AND played = %@", [NSNumber numberWithBool:YES], [NSNumber numberWithBool:NO]];
+            NSArray *cards = [[p.gamePlayer.cards allObjects] filteredArrayUsingPredicate:predicateHeldCards];
+            
+            if([cards count]>0){
+                [p hasCards:YES];
+            }else{
+                [p hasCards:NO];
+            }
                
             i++;
         }
@@ -756,7 +1101,17 @@
         int i=0;
         for(GamePlayerView *p in _arrayPlayerViews){
             p.backgroundView.backgroundColor = [UIColor orangeColor];
-            p.lblPlayer.text = [NSString stringWithFormat:@"Turn: %i", [_currentGame.turn intValue]+1];      
+            p.lblPlayer.text = [NSString stringWithFormat:@"Turn: %i", [_currentGame.turn intValue]+1];  
+            
+            NSPredicate *predicateHeldCards = [NSPredicate predicateWithFormat:@"holding = %@ AND played = %@", [NSNumber numberWithBool:YES], [NSNumber numberWithBool:NO]];
+            NSArray *cards = [[_currentGame.cards allObjects] filteredArrayUsingPredicate:predicateHeldCards];
+            
+            if([cards count]>0){
+                [p hasCards:YES];
+            }else{
+                [p hasCards:NO];
+            }
+            
             i++;
         }
     }
@@ -764,7 +1119,12 @@
 
 - (void)nextTurn{
     DLog(@"~");
-    _turnAllowed=YES;
+    
+    if(!_doNextTurn){
+        [self updateDisplay];
+        
+        return;
+    }
     
     // check to see there are cards left
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"played == %@ AND holding == %@", [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO]];
@@ -786,6 +1146,7 @@
             if ([filteredArray count] > 0) {
                 GamePlayer *gp = (GamePlayer*)[filteredArray objectAtIndex:0];
                 _currentPlayer = gp.player;
+                _currentGamePlayer = gp;
             }
         }
         
@@ -795,6 +1156,8 @@
         if (![_currentGame.managedObjectContext save:&mocerror]) {
             NSLog(@"Whoops, couldn't save: %@", [mocerror localizedDescription]);
         }
+        
+        [self displayNextPlayer];
     }else{
         [self endGame];
     }
@@ -815,48 +1178,6 @@
 - (void)quit{
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissModalViewControllerAnimated:YES];
-}
-
-- (void)removeRule{
-    DLog(@"~");
-    
-    float w;
-    float h;
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        w = self.view.frame.size.width;
-        h = self.view.frame.size.height;
-    }else{
-        if (self.view.frame.size.width < self.view.frame.size.height){
-            w = self.view.frame.size.height;
-            h = self.view.frame.size.width;
-        }else{
-            w = self.view.frame.size.width;
-            h = self.view.frame.size.height;
-        }
-    }
-    
-    if(_ivCurrentCard!=nil){
-        [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
-                         animations:^(void) {
-                             DLog(@"animate remove card");
-                             
-                             CGRect frame = _ivCurrentCard.frame;
-                             frame.origin.y = h;
-                             _ivCurrentCard.frame = frame;
-                             
-                             frame = _bgRule.frame;
-                             frame.origin.y = h;
-                             _bgRule.frame = frame;
-                         }
-                         completion:^(BOOL finished) {
-                             DLog(@"all done");
-                             [_ivCurrentCard removeFromSuperview];
-                             _btnFade.hidden=YES;
-                         }];
-    }
-    
-    [self nextTurn];
 }
 
 @end

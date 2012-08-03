@@ -7,6 +7,7 @@
 //
 
 #import "GamePlayerView.h"
+#import "CardsHelper.h"
 
 @implementation GamePlayerView
 
@@ -53,6 +54,24 @@
         
         [self addSubview:_lblPlayer];
         
+        float heldW = (h-10)/3;
+        float heldH = heldW / kCardRatio;
+        
+        if(_ivHeldCards==nil){
+            _ivHeldCards = [[UIImageView alloc] initWithFrame:CGRectMake((h-10)-heldW, (h-10)-heldH, heldW, heldH)];
+        }
+        
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            [_ivHeldCards setImage:[UIImage imageNamed:@"back-iphone.png"]];
+        }else{
+            [_ivHeldCards setImage:[UIImage imageNamed:@"back-ipad.png"]];
+        }
+        
+        CGAffineTransform transform = CGAffineTransformMakeRotation([[NSNumber numberWithFloat:(2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f)*0.5] floatValue]);
+        _ivHeldCards.transform = transform;
+        
+        [self addSubview:_ivHeldCards];
+        
         if(_btnPlayer==nil){
             _btnPlayer = [UIButton buttonWithType:UIButtonTypeCustom];
         }
@@ -67,6 +86,16 @@
 
 - (void)updateCards{
     
+}
+
+- (void)hasCards:(bool)result{
+    if(result){
+        CGAffineTransform transform = CGAffineTransformMakeRotation([[NSNumber numberWithFloat:(2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f)*0.5] floatValue]);
+        _ivHeldCards.transform = transform;
+        _ivHeldCards.hidden=NO;
+    }else{
+        _ivHeldCards.hidden=YES;
+    }
 }
 
 /*
