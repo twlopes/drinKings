@@ -10,7 +10,7 @@
     </entity>
     <entity name="Deck" representedClassName="Deck" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="cards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Card" inverseName="deck" inverseEntity="Card" syncable="YES"/>
+        <relationship name="cards" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Card" inverseName="deck" inverseEntity="Card" syncable="YES"/>
     </entity>
     <entity name="Game" representedClassName="Game" syncable="YES">
         <attribute name="turn" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
@@ -52,12 +52,12 @@
         <relationship name="cards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Card" inverseName="rule" inverseEntity="Card" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Card" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Game" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="GameCard" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="GamePlayer" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Player" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Rule" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Deck" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Card" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="Deck" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="Game" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="GameCard" positionX="0" positionY="0" width="128" height="180"/>
+        <element name="GamePlayer" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="Player" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="Rule" positionX="0" positionY="0" width="128" height="150"/>
     </elements>
 </model>

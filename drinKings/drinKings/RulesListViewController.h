@@ -7,7 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CardsViewController.h"
 
-@interface RulesListViewController : UIViewController
+@interface RulesListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
+    UITableView *_tv;
+    
+    CardsViewController *_cards;
+    
+    NSArray *_arrayItems;
+    
+    // Delete
+    int _deleteRow;
+}
+
+@property (nonatomic,retain) CardsViewController *cards;
 
 @end

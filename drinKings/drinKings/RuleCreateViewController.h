@@ -7,7 +7,24 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Rule.h"
+#import "RulesListViewController.h"
 
-@interface RuleCreateViewController : UIViewController
+@interface RuleCreateViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, UITextFieldDelegate>{
+    
+    UITableView *_tv;
+    
+    Rule *_theRule;
+    
+    RulesListViewController *_rules;
+    
+    // UI
+    UITextField *_tfName;
+    UISwitch *_switchHoldable;
+    UITextView *_tfDesc;
+}
+
+@property (nonatomic, retain) Rule *theRule;
+@property (nonatomic, retain) RulesListViewController *rules;
 
 @end

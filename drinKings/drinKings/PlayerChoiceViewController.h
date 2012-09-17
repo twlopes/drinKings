@@ -9,16 +9,19 @@
 #import <UIKit/UIKit.h>
 #import "AQGridViewCell.h"
 #import "GradientButton.h"
+#import "MBProgressHUD.h"
 
-@interface PlayerChoiceViewController : UIViewController <AQGridViewDelegate, AQGridViewDataSource> {
+@interface PlayerChoiceViewController : UIViewController <AQGridViewDelegate, AQGridViewDataSource, UIActionSheetDelegate> {
     // Data
     NSMutableArray *_arrayItems;
     NSMutableArray *_chosenItems;
     
     // Interface
     AQGridView *_gv;
+    UIView *_viewToolbar;
     GradientButton *_btnPlay;
     CGSize _playerSize;
+    MBProgressHUD* hud;
     
     // edit
     BOOL _editMode;

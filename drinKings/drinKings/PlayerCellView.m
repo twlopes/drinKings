@@ -23,13 +23,21 @@
     DLog(@"frame %f %f", frame.size.width, frame.size.height);
     
     _player = [[PlayerImageView alloc] initWithFrame: frame];
+    _player.layer.shadowColor = [UIColor blackColor].CGColor;
+    _player.layer.shadowOpacity = 0.65;
+    _player.layer.shadowOffset = CGSizeMake(0,4);
+    _player.layer.shouldRasterize=YES;
     [self.contentView addSubview: _player];
     
     _btnDelete = [GradientButton buttonWithType:UIButtonTypeCustom];
     [_btnDelete useRedDeleteStyle];
     [_btnDelete setTitle:@"X" forState:UIControlStateNormal];
     _btnDelete.frame = CGRectMake(frame.size.width-25, -5, 30, 30);
+    _btnDelete.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 0);
     _btnDelete.hidden=YES;
+    _btnDelete.layer.shadowColor = [UIColor blackColor].CGColor;
+    _btnDelete.layer.shadowOpacity = 0.65;
+    _btnDelete.layer.shadowOffset = CGSizeMake(0,4);
     [self.contentView addSubview:_btnDelete];
     
     return ( self );

@@ -11,7 +11,7 @@
 
 @implementation DeckGridViewCell
 
-@synthesize ivDeck=_ivDeck, lblName=_lblName, isSelected=_isSelected;
+@synthesize ivDeck=_ivDeck, lblName=_lblName, isSelected=_isSelected, btnDelete=_btnDelete;
 
 - (id) initWithFrame: (CGRect) frame reuseIdentifier: (NSString *) aReuseIdentifier
 {
@@ -36,6 +36,10 @@
     }else{
         [_ivDeck setImage:[UIImage imageNamed:@"deck-ipad.png"]];
     }
+    _ivDeck.layer.shadowColor = [UIColor blackColor].CGColor;
+    _ivDeck.layer.shadowOpacity = 0.65;
+    _ivDeck.layer.shadowOffset = CGSizeMake(0,4);
+    _ivDeck.layer.shouldRasterize=YES;
     [self.contentView addSubview:_ivDeck];
     
     if(_lblName==nil){
@@ -56,6 +60,17 @@
     _lblName.numberOfLines = 2;
     _lblName.backgroundColor = [UIColor clearColor];
     [self.contentView addSubview:_lblName];
+    
+    _btnDelete = [GradientButton buttonWithType:UIButtonTypeCustom];
+    [_btnDelete useRedDeleteStyle];
+    [_btnDelete setTitle:@"X" forState:UIControlStateNormal];
+    _btnDelete.frame = CGRectMake(frame.size.width-30, -5, 30, 30);
+    _btnDelete.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 0);
+    _btnDelete.hidden=YES;
+    _btnDelete.layer.shadowColor = [UIColor blackColor].CGColor;
+    _btnDelete.layer.shadowOpacity = 0.65;
+    _btnDelete.layer.shadowOffset = CGSizeMake(0,4);
+    [self.contentView addSubview:_btnDelete];
     
     return ( self );
 }

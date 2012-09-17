@@ -9,12 +9,14 @@
 #import "AQGridViewCell.h"
 
 @interface CardGridViewCell : AQGridViewCell {
+    UIView *_viewSelect;
     UIImageView *_ivCard;
     UILabel *_lblRule;
     
     bool _isSelected;
 }
 
+@property (nonatomic, retain) UIView *viewSelect;
 @property (nonatomic, retain) UIImageView *ivCard;
 @property (nonatomic, retain) UILabel *lblName;
 @property (nonatomic) bool isSelected;

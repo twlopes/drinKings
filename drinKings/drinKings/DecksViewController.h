@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "AQGridViewCell.h"
+#import "MBProgressHUD.h"
 
 @interface DecksViewController : UIViewController <AQGridViewDelegate, AQGridViewDataSource> {
     
@@ -17,6 +18,8 @@
     // Interface
     AQGridView *_gv;
     CGSize _itemSize;
+    
+    MBProgressHUD* hud;
 }
 
 @end

@@ -52,7 +52,12 @@
         float bgCardHeight = h - 60; // 20 padding
         float bgCardWidth = bgCardHeight * kCardRatio;
         
-        _cardBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(w/2 - bgCardWidth/2, 20, bgCardWidth, bgCardHeight)];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && h>=500) {
+            bgCardWidth = w - 60 * kCardRatio;
+            bgCardHeight = bgCardWidth / kCardRatio; // 20 padding
+        }
+        
+        _cardBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(w/2 - bgCardWidth/2, h/2 - bgCardHeight/2, bgCardWidth, bgCardHeight)];
         _cardBackgroundView.backgroundColor = [UIColor whiteColor];
         //_cardBackgroundView.userInteractionEnabled=NO;
         _cardBackgroundView.layer.cornerRadius = 8.0f;

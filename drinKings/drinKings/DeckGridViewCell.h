@@ -7,16 +7,19 @@
 //
 
 #import "AQGridViewCell.h"
+#import "GradientButton.h"
 
 @interface DeckGridViewCell : AQGridViewCell {
     UIImageView *_ivDeck;
     UILabel *_lblName;
+    GradientButton *_btnDelete;
     
     bool _isSelected;
 }
 
 @property (nonatomic, retain) UIImageView *ivDeck;
 @property (nonatomic, retain) UILabel *lblName;
+@property (nonatomic, retain) GradientButton * btnDelete;
 @property (nonatomic) bool isSelected;
 
 @end

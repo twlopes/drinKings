@@ -54,7 +54,24 @@
     
     DLog(@"arrayItems %@", _arrayItems);
     
+    float w = self.view.frame.size.width;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        if([_arrayItems count]<=1){
+            [_gv setGridFooterView:nil];
+        }else{
+            [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 80)]];
+        }
+    }else{
+        if([_arrayItems count]<=3){
+            [_gv setGridFooterView:nil];
+        }else{
+            [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 100)]];
+        }
+    }
+    
     [_gv reloadData];
+    [self playButtonTitle];
 }
 
 #pragma mark - View lifecycle
@@ -89,18 +106,56 @@
     
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        _playerSize = CGSizeMake(150.0*kCardRatio, 150.0);
+        _playerSize = CGSizeMake(170.0*kCardRatio, 170.0);
     }else{
         _playerSize = CGSizeMake(300.0*kCardRatio, 300.0);
+    }
+    
+    _gv = [[AQGridView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
+    _gv.scrollsToTop = YES;
+    //_gv.backgroundColor = [UIColor darkGrayColor];
+    //_gv.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Felt-Green.jpg"]];
+    _gv.backgroundColor = [UIColor clearColor];
+    _gv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _gv.autoresizesSubviews = YES;
+    _gv.dataSource = self;
+    _gv.delegate = self;
+    //[_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h/6)]];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 40)]];
+    }else{
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 100)]];
+    }
+    [self.view addSubview:_gv];
+    
+    if(_viewToolbar==nil){
+        _viewToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, h-h/6, w, h/6)];
+        
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            _viewToolbar.frame = CGRectMake(0, h-h/4-5, 320, h/6);
+        }else{
+            _viewToolbar.frame = CGRectMake(0, 540, 1024, h);
+        }
+        
+        _viewToolbar.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.5];
+        [self.view addSubview:_viewToolbar];
     }
     
     _btnPlay = [GradientButton buttonWithType:UIButtonTypeCustom];
     [_btnPlay useSimpleOrangeStyle];
     [_btnPlay setTitle:@"Play" forState:UIControlStateNormal];
     _btnPlay.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
-    _btnPlay.frame = CGRectMake(20, h-(h/6), w-40, h/7);
     
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        _btnPlay.frame = CGRectMake(20, h-(h/6)+5, w-40, h/7);
+    }else{
+        _btnPlay.frame = CGRectMake(20, h-(h/6)+15, w-40, h/7);
+    }
+    _btnPlay.layer.shadowColor = [UIColor blackColor].CGColor;
+    _btnPlay.layer.shadowOpacity = 0.65;
+    _btnPlay.layer.shadowOffset = CGSizeMake(0,4);
     _btnPlay.titleLabel.textColor = [UIColor blackColor];
+    _btnPlay.layer.shouldRasterize=YES;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:26.0f];
@@ -113,15 +168,7 @@
     
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Felt-Green.jpg"]];
     
-    _gv = [[AQGridView alloc] initWithFrame:CGRectMake(0, 0, w, _btnPlay.frame.origin.y-5)];
-    _gv.scrollsToTop = YES;
-    //_gv.backgroundColor = [UIColor darkGrayColor];
-    _gv.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Felt-Green.jpg"]];
-    _gv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _gv.autoresizesSubviews = YES;
-    _gv.dataSource = self;
-    _gv.delegate = self;
-    [self.view addSubview:_gv];
+    
     
     
     
@@ -137,6 +184,25 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    
+    float w = self.view.frame.size.width;
+    float h = self.view.frame.size.height;
+    
+    [_gv flashScrollIndicators];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        _viewToolbar.frame = CGRectMake(0, h-h/6, 320, h/6);
+    }else{
+        //_viewToolbar.frame = CGRectMake(0, 540, 1024, h);
+    }
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        _btnPlay.frame = CGRectMake(20, h-(h/6)+5, w-40, h/7);
+    }else{
+        //_btnPlay.frame = CGRectMake(20, h-(h/6)+15, w-40, h/7);
+    }
+    
+    //_viewToolbar.frame = CGRectMake(0, h-h/4+5, w, h/4);
     
     [self refreshItems];
 }
@@ -159,6 +225,11 @@
     }
 }
 
+- (void)viewDidDisappear:(BOOL)animated{
+    [hud hide:NO];
+    hud.delegate=nil;
+}
+
 #pragma mark -
 #pragma mark Buttons
 
@@ -175,7 +246,28 @@
     NSError * error = nil;
     NSArray * array = [moc executeFetchRequest:request error:&error];
     
-    if([array count]==1){
+    if([array count]==0){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Playing Decks" message:@"You need to create a new deck in the 'Deck Editor'" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+        alert.tag=666;
+        [alert show];
+    }else if([array count]==1){
+        if(hud==nil){
+            hud = [[MBProgressHUD alloc] initWithView:self.view];
+        }
+        [self.view addSubview:hud];
+        
+        hud.mode = MBProgressHUDModeIndeterminate;
+        hud.animationType = MBProgressHUDAnimationZoom;
+        hud.userInteractionEnabled=NO;
+        
+        hud.delegate = (id<MBProgressHUDDelegate>)self;
+        hud.labelText = @"Loading...";
+        hud.hidden=NO;
+        hud.graceTime=1.0f;
+        [hud show:NO];
+        DLog(@"show hud");
+        
+        
         GameBoardViewController *board = [[GameBoardViewController alloc] init];
         
         Deck *deck = [array objectAtIndex:0];
@@ -188,7 +280,75 @@
         [self.navigationController presentModalViewController:board animated:YES];
     }else{
         // need to get them to make a choice
+        UIActionSheet *action = [[UIActionSheet alloc] initWithTitle:@"Please select a Deck to play with:"
+                                                            delegate:self
+                                                   cancelButtonTitle:nil
+                                              destructiveButtonTitle:@"Cancel"
+                                                   otherButtonTitles:nil];
+        
+        for(Deck *aDeck in array){
+            [action addButtonWithTitle:aDeck.name];
+        }
+        
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            [action showInView:self.view];
+        }else{
+            [action showFromRect:_btnPlay.frame inView:self.view animated:YES];
+        }
+        
+        
     }
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    
+    DLog(@"~ %i", buttonIndex);
+    
+    if(buttonIndex==actionSheet.destructiveButtonIndex || buttonIndex==actionSheet.cancelButtonIndex || buttonIndex<0){
+        return;
+    }
+    
+    if(hud==nil){
+        hud = [[MBProgressHUD alloc] initWithView:self.view];
+    }
+    [self.view addSubview:hud];
+    
+    hud.mode = MBProgressHUDModeIndeterminate;
+    hud.animationType = MBProgressHUDAnimationZoom;
+    hud.userInteractionEnabled=NO;
+    
+    hud.delegate = (id<MBProgressHUDDelegate>)self;
+    hud.labelText = @"Loading...";
+    hud.hidden=NO;
+    hud.graceTime=1.0f;
+    [hud show:NO];
+    DLog(@"hud show");
+    
+    NSManagedObjectContext *moc;
+    if (moc == nil) {
+        moc = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+    }
+    
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Deck" inManagedObjectContext:moc]];
+    [request setIncludesPropertyValues:NO];
+    NSError * error = nil;
+    NSArray * array = [moc executeFetchRequest:request error:&error];
+    
+    Deck *aDeck = [array objectAtIndex:buttonIndex-1];
+    
+    DLog(@"deck chosen: %@ -> %@", aDeck.name, aDeck.cards);
+    
+    GameBoardViewController *board = [[GameBoardViewController alloc] init];
+    
+    Deck *deck = aDeck;
+    board.currentDeck = deck;
+    board.players = _chosenItems;
+    board.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    //self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    
+    //[self.navigationController pushViewController:board animated:YES];
+    [self.navigationController presentModalViewController:board animated:YES];
 }
 
 - (void)addPlayer{
@@ -209,15 +369,18 @@
     
     [_gv reloadData];
     
-    float w = self.view.frame.size.width;
-    float h = self.view.frame.size.height;
+    //float w = self.view.frame.size.width;
+    //float h = self.view.frame.size.height;
+    
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
     
     // set views with new info
-    _gv.frame = CGRectMake(0, 0, w, h);
+    //_gv.frame = CGRectMake(0, 0, w, h);
+    _btnPlay.alpha=0;
+    _viewToolbar.alpha=0;
     
     // commit animations
     [UIView commitAnimations];
@@ -233,15 +396,18 @@
     
     [_gv reloadData];
     
-    float w = self.view.frame.size.width;
+    //float w = self.view.frame.size.width;
     //float h = self.view.frame.size.height;
+    
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
     
     // set views with new info
-    _gv.frame = CGRectMake(0, 0, w, _btnPlay.frame.origin.y-5);
+    //_gv.frame = CGRectMake(0, 0, w, _btnPlay.frame.origin.y-5);
+    _btnPlay.alpha=1;
+    _viewToolbar.alpha=1;
     
     // commit animations
     [UIView commitAnimations];
@@ -283,23 +449,23 @@
     if (![moc save:&error]) {
         DLog(@"Error deleting");
     }else{
-        MBProgressHUD* hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
-        [self.navigationController.view addSubview:hud];
+        MBProgressHUD *deleteHud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+        [self.navigationController.view addSubview:deleteHud];
         
         // The sample image is based on the work by http://www.pixelpressicons.com, http://creativecommons.org/licenses/by/2.5/ca/
         // Make the customViews 37 by 37 pixels for best results (those are the bounds of the build-in progress indicators)
         //hud.customView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"iconWobble.png"]] autorelease];
         
         // Set custom view mode
-        hud.mode = MBProgressHUDModeDeterminate;
-        hud.animationType = MBProgressHUDAnimationZoom;
+        deleteHud.mode = MBProgressHUDModeDeterminate;
+        deleteHud.animationType = MBProgressHUDAnimationZoom;
         
-        hud.delegate = (id<MBProgressHUDDelegate>)self;
-        hud.labelText = @"Deleted";
-        hud.userInteractionEnabled=NO;
+        deleteHud.delegate = (id<MBProgressHUDDelegate>)self;
+        deleteHud.labelText = @"Deleted";
+        deleteHud.userInteractionEnabled=NO;
         
-        [hud show:YES];
-        [hud hide:YES afterDelay:2];
+        [deleteHud show:YES];
+        [deleteHud hide:YES afterDelay:2];
     }
     
     [self refreshItems];
@@ -341,12 +507,15 @@
         PlayerCreateViewController *pcvc = [[PlayerCreateViewController alloc] init];
         
         Player *aPlayer = [_arrayItems objectAtIndex:index-1];
+        pcvc.parent=self;
         
         pcvc.player = aPlayer;
         
         [self.navigationController pushViewController:pcvc animated:YES];
     }else if(index==0){
         PlayerCreateViewController *pcvc = [[PlayerCreateViewController alloc] init];
+        
+        pcvc.parent=self;
         
         [self.navigationController pushViewController:pcvc animated:YES];
     }else{
@@ -389,7 +558,8 @@
     {
         cell = [[PlayerCellView alloc] initWithFrame: CGRectMake(0.0, 0.0, _playerSize.width, _playerSize.height)
                                                  reuseIdentifier: cellIdentifier];
-        cell.selectionGlowColor = [UIColor colorWithRed:81.0/256 green:102.0/265 blue:145.0/256 alpha:1.0];
+        //cell.selectionGlowColor = [UIColor colorWithRed:81.0/256 green:102.0/265 blue:145.0/256 alpha:1.0];
+        cell.selectionStyle = AQGridViewCellSelectionStyleNone;
     }
     
     if(index==0){

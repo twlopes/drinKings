@@ -54,6 +54,40 @@ static AppDelegate *sharedInstance;
     
     self.window.rootViewController = rootController;
     [self.window makeKeyAndVisible];
+    
+    if([UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
+        //[[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.18 green:0.35 blue:0.58 alpha:1.0]];
+        [[UINavigationBar appearance] setTintColor:[Skins colorWithHexString:@"904f53"]];
+        
+        UIImage *gradientImage44;
+        UIImage *gradientImage32;
+        
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        
+            gradientImage44 = [[UIImage imageNamed:@"bgNav-iPhone.png"]
+                                        resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+            gradientImage32 = [[UIImage imageNamed:@"bgNav-iPhone.png"]
+                                        resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+            
+        }else{
+            gradientImage44 = [[UIImage imageNamed:@"bgNav.png"]
+                               resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+            gradientImage32 = [[UIImage imageNamed:@"bgNav.png"]
+                               resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+        }
+        
+        // Set the background image for *all* UINavigationBars
+        [[UINavigationBar appearance] setBackgroundImage:gradientImage44
+                                           forBarMetrics:UIBarMetricsDefault];
+        [[UINavigationBar appearance] setBackgroundImage:gradientImage32
+                                           forBarMetrics:UIBarMetricsLandscapePhone];
+        
+        /*[[UINavigationBar appearance] setBackgroundImage:[UIImage skinImageNamed:gradientImage44] forBarMetrics:UIBarMetricsDefault];
+         
+         [[UINavigationBar appearance] setBackgroundImage:[UIImage skinImageNamed:gradientImage32] forBarMetrics:UIBarMetricsLandscapePhone];*/
+        
+    }
+    
     return YES;
 }
 
@@ -240,5 +274,54 @@ static AppDelegate *sharedInstance;
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
+
+@end
+
+#import <QuartzCore/QuartzCore.h>
+
+@interface UINavigationBar (CustomImage)
+
+-(void) applyDefaultStyle;
+
+@end
+
+//Override For Custom Navigation Bar
+@implementation UINavigationBar (CustomImage)
+- (void)drawRect:(CGRect)rect {
+    DLog(@"~");
+    if(![UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
+        
+        UIImage *image;
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        
+            image = [UIImage imageNamed: @"bgNav-iPhone.png"];
+            
+        }else{
+            image = [UIImage imageNamed: @"bgNav.png"];
+        }
+        [image drawInRect:rect];
+        //self.navigationController.navigationBar.layer.contents = (id)[UIImage skinImageNamed:@"navigationBarBackgroundImage"].CGImage;
+        self.tintColor = [Skins colorWithHexString:@"904f53"];
+        //[[UINavigationBar appearance] setTintColor:[Constants colorWithHexString:kColor_navigationTint]];
+    }
+}
+
+-(void)willMoveToWindow:(UIWindow *)newWindow{
+    DLog(@"~");
+    [super willMoveToWindow:newWindow];
+    [self applyDefaultStyle];
+}
+
+- (void)applyDefaultStyle {
+    DLog(@"~");
+    // add the drop shadow
+    //[super willMoveToWindow:newWindow];
+    self.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.layer.shadowOpacity = 0.65;
+    self.layer.shadowOffset = CGSizeMake(0,4);
+    //CGRect shadowPath = CGRectMake(self.layer.bounds.origin.x - 10, self.layer.bounds.origin.y, self.layer.bounds.size.width * 2 + 20, self.layer.bounds.size.height);
+    //self.layer.shadowPath = [UIBezierPath bezierPathWithRect:shadowPath].CGPath;
+    //self.layer.shouldRasterize = YES;
+}
 
 @end

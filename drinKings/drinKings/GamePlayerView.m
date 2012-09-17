@@ -28,8 +28,10 @@
         _backgroundView.backgroundColor = [UIColor clearColor];
         [self addSubview:_backgroundView];
         
+        float imgWidth = MIN(h, w);
+        
         if(_ivPlayer==nil){
-            _ivPlayer = [[UIImageView alloc] initWithFrame:CGRectMake(5, 5, h-10, h-10)];
+            _ivPlayer = [[UIImageView alloc] initWithFrame:CGRectMake(5, 5, imgWidth-10, h-10)];
         }
         //[_ivPlayer setImage:[UIImage imageNamed:@"Felt-Green.jpg"]];
         _ivPlayer.backgroundColor = [UIColor grayColor];
@@ -40,7 +42,7 @@
         if(_lblPlayer==nil){
             _lblPlayer = [[UILabel alloc] init];
         }
-        _lblPlayer.frame = CGRectMake(h+5, 0, w-(h+5), h);
+        _lblPlayer.frame = CGRectMake(h+5, 0, MAX(0, w-(imgWidth+5+2)), h);
         _lblPlayer.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         _lblPlayer.text = @"Player Turn";
         _lblPlayer.backgroundColor = [UIColor clearColor];
@@ -54,11 +56,11 @@
         
         [self addSubview:_lblPlayer];
         
-        float heldW = (h-10)/3;
+        float heldW = (imgWidth-10)/3;
         float heldH = heldW / kCardRatio;
         
         if(_ivHeldCards==nil){
-            _ivHeldCards = [[UIImageView alloc] initWithFrame:CGRectMake((h-10)-heldW, (h-10)-heldH, heldW, heldH)];
+            _ivHeldCards = [[UIImageView alloc] initWithFrame:CGRectMake((imgWidth-10)-heldW, (imgWidth-10)-heldH, heldW, heldH)];
         }
         
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {

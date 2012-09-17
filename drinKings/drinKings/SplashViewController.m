@@ -80,14 +80,25 @@
     }
     
     // start timer
-    _timerGame = [NSTimer scheduledTimerWithTimeInterval:1.5f target:self selector:@selector(endGame) userInfo:nil repeats:NO];
+    _timerGame = [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(endGame) userInfo:nil repeats:NO];
     
     // get splash up and running, no need for transition since it should already be displayed from loading
     _btnSplashGame = [UIButton buttonWithType:UIButtonTypeCustom];
-    _btnSplashGame.frame = CGRectMake(0, 0, w, h);
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        _btnSplashGame.frame = CGRectMake(0, -20, w, h+20);
+    }else{
+        _btnSplashGame.frame = CGRectMake(0, -20, w, h);
+    }
+    
     _btnSplashGame.adjustsImageWhenHighlighted=NO;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [_btnSplashGame setBackgroundImage:[UIImage imageNamed:@"Default"] forState:UIControlStateNormal];
+        
+        if(h>500){
+            [_btnSplashGame setBackgroundImage:[UIImage imageNamed:@"Default-568h"] forState:UIControlStateNormal];
+        }else{
+            [_btnSplashGame setBackgroundImage:[UIImage imageNamed:@"Default"] forState:UIControlStateNormal];
+        }
     }else{
         [_btnSplashGame setBackgroundImage:[UIImage imageNamed:@"Default-Landscape~ipad"] forState:UIControlStateNormal];
     }

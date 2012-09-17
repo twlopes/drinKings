@@ -8,6 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RuleCell : UITableViewCell
+@interface RuleCell : UITableViewCell {
+    UILabel *_label;
+    bool _resizeLabel;
+    
+    UIButton *_btnInfo;
+    NSMutableString *_infoString;
+}
+
+@property (assign) bool resizeLabel;
+@property (nonatomic,retain) UILabel *label;
+@property (nonatomic,retain) UIButton *btnInfo;
+@property (nonatomic,retain) NSMutableString *infoString;
 
 @end

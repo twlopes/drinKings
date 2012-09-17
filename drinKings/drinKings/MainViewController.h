@@ -10,12 +10,18 @@
 #import "GradientButton.h"
 
 @interface MainViewController : UIViewController {
-    GradientButton *_btnPlay;
+    UIButton *_btnPlay;
     GradientButton *_btnAbout;
     GradientButton *_btnHelp;
-    GradientButton *_btnDeck;
+    UIButton *_btnDeck;
     
     UIImageView *_ivBG;
+    UIImageView *_ivLogo;
+    
+    UIPopoverController *_popover;
+    
+    UIView *_viewCover;
+    bool _firstLoad;
 }
 
 @end

@@ -7,5 +7,5 @@
 @interface Skins : NSObject {
 }
 + (UIColor *)colorWithHexString:(NSString *)hexString;
-
++ (UIColor *)colorWithHexString:(NSString *)hexString alpha:(float)a;
 @end

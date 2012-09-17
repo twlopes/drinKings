@@ -39,6 +39,10 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    [self newGame];
+}
+
+- (void)newGame{
     // setup the game, cards and players
     [self setupGame];
     
@@ -117,6 +121,7 @@
     
     // see if a game record is there, otherwise create one
     if(_currentGame==nil){
+        DLog(@"setting up game");
         
         // Delete all instances of game, gamecard, gameplayer
         NSFetchRequest * allItems = [[NSFetchRequest alloc] init];
@@ -159,6 +164,7 @@
         _currentGame = (Game *)[NSEntityDescription insertNewObjectForEntityForName:@"Game"
                                                           inManagedObjectContext:moc];
         _currentGame.turn=[NSNumber numberWithInt:0];
+        DLog(@"new game %@", _currentGame);
         
         // setup the cards for the game
         // for the time being we will be creating a record for all of them
@@ -191,6 +197,7 @@
             // there is a problem here...
             DLog(@"error, no cards found");
             _currentGame.cards=nil;
+            [self endGame];
         }
         
         // setup the players for the game
@@ -275,9 +282,7 @@
     _toolbar.layer.masksToBounds=NO;*/
     [self.view addSubview:_toolbar];
     
-    if(_arrayPlayerViews==nil){
-        _arrayPlayerViews = [[NSMutableArray alloc] init];
-    }
+    _arrayPlayerViews = [[NSMutableArray alloc] init];
     
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"playerTurn" ascending:YES];
     NSArray *players = [[_currentGame.players allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
@@ -348,7 +353,7 @@
     // rule bg
     if(_bgRule==nil){
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            _bgRule = [[UIImageView alloc] initWithFrame:CGRectMake(7.5, h, w-15, h/2)];
+            _bgRule = [[UIImageView alloc] initWithFrame:CGRectMake(7.5, h, w-15, 230)];
         }else{
             _bgRule = [[UIImageView alloc] initWithFrame:CGRectMake(30, h, w-60, h/2.2)];
         }
@@ -361,7 +366,7 @@
     }else{
         [_bgRule setImage:[UIImage imageNamed:@"paper-ipad.png"]];
     }
-    _bgRule.contentMode = UIViewContentModeScaleAspectFit;
+    _bgRule.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_bgRule];
     
     
@@ -395,10 +400,10 @@
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         _lblRuleDesc.font = [UIFont fontWithName:@"Marker Felt" size:16.0];
-        _lblRuleDesc.frame = CGRectMake(20, _lblRuleTitle.frame.size.height+20, _bgRule.frame.size.width-40, _bgRule.frame.size.height-60);
+        _lblRuleDesc.frame = CGRectMake(20, _lblRuleTitle.frame.size.height+15, _bgRule.frame.size.width-40, _bgRule.frame.size.height-60);
     }else{
         _lblRuleDesc.font = [UIFont fontWithName:@"Marker Felt" size:36.0];
-        _lblRuleDesc.frame = CGRectMake(20, _lblRuleTitle.frame.size.height+20, _bgRule.frame.size.width-40, _bgRule.frame.size.height-60);
+        _lblRuleDesc.frame = CGRectMake(20, _lblRuleTitle.frame.size.height+15, _bgRule.frame.size.width-40, _bgRule.frame.size.height-60);
     }
     
     _lblRuleDesc.numberOfLines=0;
@@ -412,7 +417,7 @@
     }
     _btnFade.frame = CGRectMake(0, 0, w, h);
     _btnFade.hidden=YES;
-    _btnFade.backgroundColor = [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.65f];
+    _btnFade.backgroundColor = [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.45f];
     //_btnFade.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [_btnFade addTarget:self action:@selector(removeRule) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_btnFade];
@@ -422,14 +427,14 @@
     }
     _btnFadePlayer.frame = CGRectMake(0, 0, w, h);
     _btnFadePlayer.hidden=YES;
-    _btnFadePlayer.backgroundColor = [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.65f];
+    _btnFadePlayer.backgroundColor = [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.45f];
     //_btnFade.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [_btnFadePlayer addTarget:self action:@selector(removePlayer) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_btnFadePlayer];
     
     
     
-    NSLog(@"Available fonts: %@", [UIFont familyNames]);
+    /*NSLog(@"Available fonts: %@", [UIFont familyNames]);
     
     NSArray *fontFamilyNames = [UIFont familyNames];
     NSLog( @"familyNames: %d", [fontFamilyNames count] );
@@ -438,7 +443,7 @@
         NSLog(@"familyName: %@", familyName );
         NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
         NSLog( @"fontNames: %@", fontNames );
-    }
+    }*/
 }
 
 - (void)shuffleCards{
@@ -519,9 +524,10 @@
         btn.transform = transform;
         
         /*btn.layer.shadowColor = [UIColor blackColor].CGColor;
-        btn.layer.shadowOpacity = 0.5;
-        btn.layer.shadowRadius = 3;
-        btn.layer.shadowOffset = CGSizeMake(3.0f, 3.0f);*/
+        btn.layer.shadowOpacity = 0.3;
+        btn.layer.shadowRadius = 2;
+        btn.layer.shadowOffset = CGSizeMake(0.0f, 4.0f);
+        btn.layer.shouldRasterize=YES;*/
         
         /*CAGradientLayer *darkLayer = [CAGradientLayer layer];
         darkLayer.frame = btn.layer.bounds;
@@ -730,10 +736,25 @@
             [self quit];
         }
     }
+    
+    if(alertView.tag==20){
+        if(buttonIndex==alertView.cancelButtonIndex){
+            [self quit];
+        }else{
+            _currentGame=nil;
+            _currentCard=nil;
+            _currentGameCard=nil;
+            _currentGamePlayer=nil;
+            _currentPlayer=nil;
+            [self newGame];
+            
+            [self displayNextPlayer];
+        }
+    }
 }
 
 - (void)touchQuit{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure you want to quit?"
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure you want to Quit?"
                                                         message:nil
                                                        delegate:self
                                               cancelButtonTitle:@"Quit"
@@ -774,7 +795,13 @@
         _ivCurrentCard = [[UIImageView alloc] init];
     }
     
-    _ivCurrentCard.frame = CGRectMake((w/2) - (w/(1.2*2)), h, w/1.2, (w/1.2) / kCardRatio);
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+    
+        _ivCurrentCard.frame = CGRectMake((w/2) - (w/(1.2*2)), h, w/1.2, (w/1.2) / kCardRatio);
+        
+    }else{
+        _ivCurrentCard.frame = CGRectMake((w/2) - (w/(1.5*2)), h, w/1.5, (w/1.5) / kCardRatio);
+    }
     DLog(@"current card %f %f %f %f", _ivCurrentCard.frame.origin.x, _ivCurrentCard.frame.origin.y, _ivCurrentCard.frame.size.width, _ivCurrentCard.frame.size.height);
     _ivCurrentCard.image = [CardsHelper imageForCard:_currentCard];
     _ivCurrentCard.contentMode = UIViewContentModeScaleAspectFit;
@@ -823,6 +850,18 @@
     _lblRuleTitle.text = _currentCard.rule.name;
     _lblRuleDesc.text = _currentCard.rule.desc;
     
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        
+        if([_lblRuleDesc.text length]<=100){
+            _lblRuleDesc.font = [UIFont fontWithName:@"Marker Felt" size:26.0];
+        }else if([_lblRuleDesc.text length]<=200){
+            _lblRuleDesc.font = [UIFont fontWithName:@"Marker Felt" size:20.0];
+        }else{
+            _lblRuleDesc.font = [UIFont fontWithName:@"Marker Felt" size:16.0];
+        }
+    }
+
+    
     CGSize constraint = CGSizeMake(_lblRuleTitle.frame.size.width, 5000);
     CGSize size = [_lblRuleTitle.text sizeWithFont:_lblRuleTitle.font constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
     
@@ -832,6 +871,12 @@
     
     frame = _lblRuleDesc.frame;
     frame.origin.y = _lblRuleTitle.frame.origin.y+_lblRuleTitle.frame.size.height;
+    /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        frame.size.height = self.view.frame.size.height-frame.origin.y;
+    }else{
+        frame.size.height = self.view.frame.size.width-frame.origin.y;
+    }*/
+    frame.size.height = _bgRule.frame.size.height-frame.origin.y;
     _lblRuleDesc.frame = frame;
     
     _btnFade.alpha=0;
@@ -1052,7 +1097,7 @@
                          DLog(@"animate bring in rule");
                          
                          CGRect frame = _nextPlayerView.frame;
-                         frame.origin.y = -frame.size.height;
+                         frame.origin.y = -frame.size.height-10;
                          _nextPlayerView.frame = frame;
                          _btnFadePlayer.alpha=0;
                          _nextPlayerView.alpha=0;
@@ -1121,6 +1166,7 @@
     DLog(@"~");
     
     if(!_doNextTurn){
+        [self displayNextPlayer];
         [self updateDisplay];
         
         return;
@@ -1167,9 +1213,9 @@
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Game Over"
                                                         message:nil
                                                        delegate:self
-                                              cancelButtonTitle:nil
-                                              otherButtonTitles:@"Ok", nil];
-    
+                                              cancelButtonTitle:@"Quit"
+                                              otherButtonTitles:@"Play Again", nil];
+    alertView.tag=20;
     [alertView show];
 }
 

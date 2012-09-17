@@ -11,6 +11,7 @@
 #import "DecksViewController.h"
 #import "HelpViewController.h"
 #import "AboutViewController.h"
+#import "CardsHelper.h"
 
 @implementation MainViewController
 
@@ -26,6 +27,9 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    _firstLoad=YES;
+    
     return;
     
     float w;
@@ -102,6 +106,8 @@
     [self.view addSubview:btnPlay];
     DLog(@"play width: %f height: %f", w-40, h/7);
     DLog(@"play width: %f height: %f originy %f", btnPlay.frame.size.width, btnPlay.frame.size.height, btnPlay.frame.origin.y);
+    
+    
 }
 
 - (void)viewDidUnload
@@ -139,12 +145,26 @@
         DLog(@"`");
         _ivBG = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
         
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             [_ivBG setImage:[UIImage imageNamed:@"Default.png"]];
         }else{
             [_ivBG setImage:[UIImage imageNamed:@"Default-Landscape~ipad.png"]];
-        }
+        }*/
+        [_ivBG setImage:[UIImage imageNamed:@"Felt-Green.jpg"]];
         [self.view addSubview:_ivBG];
+    }
+    
+    if(_ivLogo==nil){
+        DLog(@"`");
+        
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            _ivLogo = [[UIImageView alloc] initWithFrame:CGRectMake(w/2-293/2, 125, 293, 74)];
+            [_ivLogo setImage:[UIImage imageNamed:@"dlogo-iphone.png"]];
+        }else{
+            _ivLogo = [[UIImageView alloc] initWithFrame:CGRectMake(w/2-698/2, 120, 698, 172)];
+            [_ivLogo setImage:[UIImage imageNamed:@"dlogo-ipad.png"]];
+        }
+        [self.view addSubview:_ivLogo];
     }
     
     /*if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
@@ -153,7 +173,7 @@
      h = temp;
      }*/
     
-    if(_btnAbout==nil){
+    /*if(_btnAbout==nil){
         _btnAbout = [GradientButton buttonWithType:UIButtonTypeCustom];
 
         [_btnAbout useWhiteActionSheetStyle];
@@ -163,12 +183,12 @@
         _btnAbout.frame = CGRectMake(10, 10, 120, h/10);
         [_btnAbout addTarget:self action:@selector(about) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_btnAbout];
-    }
+    }*/
     
     if(_btnHelp==nil){
         _btnHelp = [GradientButton buttonWithType:UIButtonTypeCustom];
         [_btnHelp useWhiteActionSheetStyle];
-        [_btnHelp setTitle:@"How to Play" forState:UIControlStateNormal];
+        [_btnHelp setTitle:@"Help" forState:UIControlStateNormal];
         _btnHelp.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
         
         _btnHelp.frame = CGRectMake(w-130, 10, 120, h/10);
@@ -176,41 +196,100 @@
         [self.view addSubview:_btnHelp];
     }
     
+    float cardW;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        cardW = w/2.5;
+    }else{
+        cardW = w/4;
+    }
+    
     
     if(_btnDeck==nil){
-        _btnDeck = [GradientButton buttonWithType:UIButtonTypeCustom];
-        [_btnDeck useAlertStyle];
-        [_btnDeck setTitle:@"Deck Editor" forState:UIControlStateNormal];
+        _btnDeck = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_btnDeck setTitle:@"Deck\nEditor" forState:UIControlStateNormal];
         _btnDeck.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
         
-        _btnDeck.frame = CGRectMake(20, h-(h/6)-(h/7), w-40, h/9);
+        _btnDeck.frame = CGRectMake(20, h-cardW/kCardRatio-20, cardW, cardW/kCardRatio);
         [_btnDeck addTarget:self action:@selector(deck) forControlEvents:UIControlEventTouchUpInside];
         
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            _btnDeck.titleLabel.font = [UIFont systemFontOfSize:20.0f];
+            [_btnDeck setBackgroundImage:[UIImage imageNamed:@"deck-iphone.png"] forState:UIControlStateNormal];
         }else{
-            _btnDeck.titleLabel.font = [UIFont systemFontOfSize:36.0f];
+            [_btnDeck setBackgroundImage:[UIImage imageNamed:@"deck-ipad.png"] forState:UIControlStateNormal];
         }
         
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            _btnDeck.titleLabel.font = [UIFont boldSystemFontOfSize:26.0f];
+        }else{
+            _btnDeck.titleLabel.font = [UIFont boldSystemFontOfSize:54.0f];
+        }
+        _btnDeck.titleLabel.layer.shadowColor = [[UIColor blackColor] CGColor];
+        _btnDeck.titleLabel.layer.shadowRadius = 10.0f;
+        _btnDeck.titleLabel.layer.shadowOpacity = 1.0;
+        _btnDeck.titleLabel.layer.shadowOffset = CGSizeZero;
+        _btnDeck.titleLabel.layer.masksToBounds = NO;
+        
+        /*_btnDeck.titleLabel.shadowColor = [UIColor blackColor];
+        _btnDeck.titleLabel.shadowOffset = CGSizeMake(0, 4);
+        _btnDeck.titleLabel.layer.shadowRadius = 8.0f;*/
+        _btnDeck.titleLabel.numberOfLines=2;
+        _btnDeck.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
+        _btnDeck.titleLabel.textAlignment = UITextAlignmentCenter;
+        _btnDeck.layer.shadowColor = [UIColor blackColor].CGColor;
+        _btnDeck.layer.shadowOpacity = 0.65;
+        _btnDeck.layer.shadowOffset = CGSizeMake(0,4);
         [self.view addSubview:_btnDeck];
     }
     
     if(_btnPlay==nil){
-        _btnPlay = [GradientButton buttonWithType:UIButtonTypeCustom];
-        [_btnPlay useSimpleOrangeStyle];
+        _btnPlay = [UIButton buttonWithType:UIButtonTypeCustom];
+        //[_btnPlay useSimpleOrangeStyle];
         [_btnPlay setTitle:@"Play" forState:UIControlStateNormal];
         _btnPlay.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
         
-        _btnPlay.frame = CGRectMake(20, h-(h/6), w-40, h/7);
+        _btnPlay.frame = CGRectMake(w-cardW-20, h-cardW/kCardRatio-20, cardW, cardW/kCardRatio);
         [_btnPlay addTarget:self action:@selector(play) forControlEvents:UIControlEventTouchUpInside];
-        
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:26.0f];
+            [_btnPlay setBackgroundImage:[UIImage imageNamed:@"deck-iphone.png"] forState:UIControlStateNormal];
         }else{
-            _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:42.0f];
+            [_btnPlay setBackgroundImage:[UIImage imageNamed:@"deck-ipad.png"] forState:UIControlStateNormal];
         }
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:30.0f];
+        }else{
+            _btnPlay.titleLabel.font = [UIFont boldSystemFontOfSize:60.0f];
+        }
+        _btnPlay.titleLabel.layer.shadowColor = [[UIColor blackColor] CGColor];
+        _btnPlay.titleLabel.layer.shadowRadius = 10.0f;
+        _btnPlay.titleLabel.layer.shadowOpacity = 1.0;
+        _btnPlay.titleLabel.layer.shadowOffset = CGSizeZero;
+        _btnPlay.titleLabel.layer.masksToBounds = NO;
         
+        /*_btnPlay.titleLabel.shadowColor = [UIColor blackColor];
+        _btnPlay.titleLabel.shadowOffset = CGSizeMake(0, 4);*/
+        _btnPlay.layer.shadowColor = [UIColor blackColor].CGColor;
+        _btnPlay.layer.shadowOpacity = 0.65;
+        _btnPlay.layer.shadowOffset = CGSizeMake(0,4);
         [self.view addSubview:_btnPlay];
+    }
+    
+    if(_firstLoad){
+        
+        _viewCover = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
+        _viewCover.backgroundColor=[UIColor blackColor];
+        _viewCover.alpha=1;
+        _viewCover.userInteractionEnabled=NO;
+        [self.view addSubview:_viewCover];
+        
+        [UIView animateWithDuration:0.7 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^(void) {
+                             _viewCover.alpha=0;
+                         }
+                         completion:^(BOOL finished) {
+                             _viewCover.hidden=YES;
+                         }];
+        
+        _firstLoad=NO;
     }
 }
 
@@ -251,16 +330,56 @@
 
 - (void)help{
     HelpViewController *vc = [[HelpViewController alloc] init];
+    vc.contentSizeForViewInPopover = CGSizeMake(320, 480);
     
-    [self.navigationController pushViewController:vc animated:YES];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [self.navigationController pushViewController:vc animated:YES];
+    }else{
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+        nav.contentSizeForViewInPopover = CGSizeMake(320, 480);
+        
+        if([UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
+            [nav.navigationBar setBackgroundImage:nil
+                                    forBarMetrics:UIBarMetricsDefault];
+            [nav.navigationBar setBackgroundImage:nil
+                                    forBarMetrics:UIBarMetricsLandscapePhone];
+        }
+        
+        _popover = [[UIPopoverController alloc] initWithContentViewController:nav];
+        _popover.delegate = (id<UIPopoverControllerDelegate>)self;
+        [_popover presentPopoverFromRect:_btnHelp.frame
+                                  inView:self.view
+                permittedArrowDirections:UIPopoverArrowDirectionRight
+                                animated:YES];
+    }
     
     //[pcvc release];
 }
 
 - (void)about{
     AboutViewController *vc = [[AboutViewController alloc] init];
+    vc.contentSizeForViewInPopover = CGSizeMake(320, 480);
     
-    [self.navigationController pushViewController:vc animated:YES];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [self.navigationController pushViewController:vc animated:YES];
+    }else{
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+        nav.contentSizeForViewInPopover = CGSizeMake(320, 480);
+        
+        if([UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
+            [nav.navigationBar setBackgroundImage:nil
+                                    forBarMetrics:UIBarMetricsDefault];
+            [nav.navigationBar setBackgroundImage:nil
+                                    forBarMetrics:UIBarMetricsLandscapePhone];
+        }
+        
+        _popover = [[UIPopoverController alloc] initWithContentViewController:nav];
+        _popover.delegate = (id<UIPopoverControllerDelegate>)self;
+        [_popover presentPopoverFromRect:_btnAbout.frame
+                                  inView:self.view
+                permittedArrowDirections:UIPopoverArrowDirectionLeft
+                                animated:YES];
+    }
 
     
     //[pcvc release];

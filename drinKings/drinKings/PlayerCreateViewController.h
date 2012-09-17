@@ -28,6 +28,7 @@
     PlayerChoiceViewController *_parent;
     
     bool _changed;
+    bool _forceSelect;
     
     MBProgressHUD* hud;
 }

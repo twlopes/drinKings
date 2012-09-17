@@ -11,7 +11,7 @@
 
 @implementation CardGridViewCell
 
-@synthesize ivCard=_ivCard, lblName=_lblName, isSelected=_isSelected;
+@synthesize ivCard=_ivCard, lblName=_lblName, isSelected=_isSelected, viewSelect=_viewSelect;
 
 - (id) initWithFrame: (CGRect) frame reuseIdentifier: (NSString *) aReuseIdentifier
 {
@@ -27,7 +27,12 @@
     float w = frame.size.width;
     float h = frame.size.height;
     
-    float deckH = h-40;
+    _viewSelect = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
+    _viewSelect.backgroundColor = [UIColor clearColor];
+    _viewSelect.layer.cornerRadius=5.0f;
+    [self.contentView addSubview:_viewSelect];
+    
+    float deckH = h-55;
     float deckW = deckH*kCardRatio;
     
     _ivCard = [[UIImageView alloc] initWithFrame:CGRectMake(w/2-deckW/2, 5, deckW, deckH)];
@@ -36,12 +41,16 @@
     }else{
         [_ivCard setImage:[UIImage imageNamed:@"deck-ipad.png"]];
     }
+    _ivCard.layer.shadowColor = [UIColor blackColor].CGColor;
+    _ivCard.layer.shadowOpacity = 0.65;
+    _ivCard.layer.shadowOffset = CGSizeMake(0,4);
+    _ivCard.layer.shouldRasterize=YES;
     [self.contentView addSubview:_ivCard];
     
     if(_lblName==nil){
         _lblName = [[UILabel alloc] init];
     }
-    _lblName.frame = CGRectMake(10, h-40, w-20, 40);
+    _lblName.frame = CGRectMake(10, h-55, w-20, 55);
     _lblName.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _lblName.text = @"Deck";
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {

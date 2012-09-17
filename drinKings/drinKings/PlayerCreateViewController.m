@@ -76,7 +76,12 @@
     }
     
     float vH = h-border*2;
-    float vW = (h-border*2)*kCardRatio;
+    float vW = vH*kCardRatio;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && h>=500) {
+        vW = w-border*2;
+        vH = vW/kCardRatio;
+    }
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
         //vH = (h-border*2)*kCardRatio;
@@ -89,6 +94,9 @@
         _viewBG = [[UIView alloc] initWithFrame:CGRectMake((w/2) - vW/2, border, vW, vH)];
         _viewBG.backgroundColor = [UIColor whiteColor];
         _viewBG.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _viewBG.layer.shadowColor = [UIColor blackColor].CGColor;
+        _viewBG.layer.shadowOpacity = 0.65;
+        _viewBG.layer.shadowOffset = CGSizeMake(0,4);
         [_sv addSubview:_viewBG];
     }
     
@@ -159,6 +167,9 @@
     [self registerNotifications];
     
     _changed=NO;
+    _forceSelect=NO;
+    
+    [self rightButton];
     
     /*self.navigationItem.backBarButtonItem.target = self;
     self.navigationItem.backBarButtonItem.action = @selector(backButtonDidPressed:);*/
@@ -194,8 +205,7 @@
     
     
     
-    UIBarButtonItem *save = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(save)];
-    [self.navigationItem setRightBarButtonItem:save];
+    
     
     if(_player==nil){
         self.title = @"New Player";
@@ -207,6 +217,14 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [hud hide:NO];
     hud.delegate=nil;
+    
+    if(_forceSelect){
+        if(![_parent.chosenItems containsObject:_player]){
+            [_parent.chosenItems addObject:_player];
+            
+            DLog(@"chosen %@ - %@", _parent.chosenItems, _player);
+        }
+    }
 }
 
 - (void)viewDidUnload
@@ -223,6 +241,15 @@
         return (interfaceOrientation == UIInterfaceOrientationPortrait);
     } else {
         return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+    }
+}
+
+- (void)rightButton{
+    if(_changed){
+        UIBarButtonItem *save = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(save)];
+        [self.navigationItem setRightBarButtonItem:save];
+    }else{
+        [self.navigationItem setRightBarButtonItem:nil];
     }
 }
 
@@ -260,7 +287,7 @@
     
     CGRect svFrame = _sv.frame;
     svFrame.size.height = self.view.bounds.size.height - keyboardBounds.size.height;
-    
+    _sv.scrollEnabled=YES;
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:[duration doubleValue]];
@@ -283,21 +310,24 @@
 - (void)keyboardDidShow:(NSNotification*)note
 {
     DLog(@"~");
-    
+    DLog(@"~");
     CGRect keyboardBounds;
     [[note.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] getValue: &keyboardBounds];
     keyboardBounds = [self.view convertRect:keyboardBounds toView:nil];
-    
+    DLog(@"~");
     CGPoint bottomOffset;
     
     UIInterfaceOrientation orientation = [[UIDevice currentDevice] orientation];
-    
+    DLog(@"~");
     if (orientation== UIDeviceOrientationPortrait || orientation==UIDeviceOrientationPortraitUpsideDown){
         bottomOffset = CGPointMake(0, _sv.contentSize.height - _sv.bounds.size.height + _sv.contentInset.bottom);
     }else{
-        bottomOffset = CGPointMake(0, _sv.contentSize.height - _sv.bounds.size.height);
+        //bottomOffset = CGPointMake(0, _sv.contentSize.height - _sv.bounds.size.height);
+        bottomOffset = CGPointMake(0, _sv.contentSize.height - _sv.bounds.size.height + _sv.contentInset.bottom);
     }
+    DLog(@"%f", bottomOffset.y);
     [_sv setContentOffset:bottomOffset animated:YES];
+    DLog(@"!");
 }
 
 - (void)keyboardWillHide:(NSNotification*)note
@@ -332,6 +362,14 @@
     DLog(@"reporting tf frame %f %f %f %f", f.origin.x, f.origin.y, f.size.width, f.size.height);
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    
+    _changed=YES;
+    
+    [self rightButton];
+    
+    return YES;
+}
 
 -(BOOL) textFieldShouldReturn:(UITextField*) textField {
     DLog(@"~");
@@ -339,6 +377,8 @@
     
     if(_player!=nil && ![textField.text isEqualToString:_player.name]){
         _changed=YES;
+        
+        [self rightButton];
         
         self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel
@@ -359,6 +399,8 @@
     if(_tfName.text==nil){
         error=YES;
     }
+    
+    [_tfName resignFirstResponder];
     
     if(!error){
     
@@ -393,6 +435,8 @@
         }else{
             _changed=NO;
             
+            [self rightButton];
+            
             self.navigationItem.leftBarButtonItem =
             [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemDone
                                                           target: self
@@ -418,6 +462,8 @@
             [hud show:YES];
             [hud hide:YES afterDelay:2];
             
+            _forceSelect=YES;
+            
             if(![_parent.chosenItems containsObject:_player]){
                 [_parent.chosenItems addObject:_player];
                 
@@ -441,7 +487,7 @@
     
     if(_changed){
         // warn
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Forget something?"
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Whoops!"
 															message:@"Are you sure you want to leave without saving?"
 														   delegate:self
 												  cancelButtonTitle:@"Yes"
@@ -466,6 +512,8 @@
 - (void)openCamera:(id)sender{
     DLog(@"~");
     
+    [_tfName resignFirstResponder];
+    
     if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         
         UIActionSheet *actionSheet;
@@ -488,6 +536,12 @@
         actionSheet.tag=0;
         
 		[actionSheet showInView:self.view];
+        
+        /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            [actionSheet showInView:self.view];
+        }else{
+            [actionSheet showFromRect:_ivPlayer.frame inView:self.view animated:YES];
+        }*/
         
         // broken
         
@@ -519,6 +573,12 @@
             
             [actionSheet showInView:self.view];
             
+            /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+                [actionSheet showInView:self.view];
+            }else{
+                [actionSheet showFromRect:_ivPlayer.frame inView:self.view animated:YES];
+            }*/
+            
         }else{
             _picker = [[UIImagePickerController alloc] init];
             _picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -532,6 +592,13 @@
                 [self.navigationController presentModalViewController:_picker animated:YES];
             }else{
             
+                if([UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
+                    [_picker.navigationBar setBackgroundImage:nil
+                                            forBarMetrics:UIBarMetricsDefault];
+                    [_picker.navigationBar setBackgroundImage:nil
+                                            forBarMetrics:UIBarMetricsLandscapePhone];
+                }
+                
                 // if ipad
                 _popover = [[UIPopoverController alloc] initWithContentViewController:_picker];
                 //self.popoverController = popover;          
@@ -600,6 +667,14 @@
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
                 [self.navigationController presentModalViewController:_picker animated:YES];
             }else{
+                
+                if([UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
+                    [_picker.navigationBar setBackgroundImage:nil
+                                                forBarMetrics:UIBarMetricsDefault];
+                    [_picker.navigationBar setBackgroundImage:nil
+                                                forBarMetrics:UIBarMetricsLandscapePhone];
+                }
+                
                 _popover = [[UIPopoverController alloc] initWithContentViewController:_picker];
                 //self.popoverController = popover;          
                 _popover.delegate = (id<UIPopoverControllerDelegate>)self;
@@ -626,6 +701,13 @@
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
                 [self.navigationController presentModalViewController:_picker animated:YES];
             }else{
+                if([UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
+                    [_picker.navigationBar setBackgroundImage:nil
+                                                forBarMetrics:UIBarMetricsDefault];
+                    [_picker.navigationBar setBackgroundImage:nil
+                                                forBarMetrics:UIBarMetricsLandscapePhone];
+                }
+                
                 _popover = [[UIPopoverController alloc] initWithContentViewController:_picker];
                 //self.popoverController = popover;          
                 _popover.delegate = (id<UIPopoverControllerDelegate>)self;
@@ -717,11 +799,13 @@
 
 - (void) imagePickerController: (UIImagePickerController *) imagePicker
  didFinishPickingMediaWithInfo: (NSDictionary *) info {
-    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    DLog(@"mediaType %@", mediaType);
+    //NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
+    //DLog(@"mediaType %@", mediaType);
 	//if (CFStringCompare ((CFStringRef) mediaType, kUTTypeImage, 0) == kCFCompareEqualTo) {
     
     _changed=YES;
+    
+    [self rightButton];
     
     self.navigationItem.leftBarButtonItem =
     [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel

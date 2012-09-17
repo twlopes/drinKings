@@ -262,7 +262,7 @@
 	[colors2 addObject:(id)[color CGColor]];
 	color = [UIColor colorWithRed:0.311 green:0.383 blue:0.748 alpha:1.0];
 	[colors2 addObject:(id)[color CGColor]];
-    self.highlightGradientColors = colors2;
+    self.highlightGradientColors = colors;
     self.highlightGradientLocations = [NSMutableArray arrayWithObjects:
                                        [NSNumber numberWithFloat:0.0f],
                                        [NSNumber numberWithFloat:1.0f],
@@ -275,7 +275,7 @@
     
     self.cornerRadius = 9.f;
     [self setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [self setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    [self setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
 }
 - (void)useBlackActionSheetStyle
 {
@@ -297,7 +297,7 @@
                                     nil];
     self.cornerRadius = 9.0f;
     
-	NSMutableArray *colors2 = [NSMutableArray arrayWithCapacity:7];
+	/*NSMutableArray *colors2 = [NSMutableArray arrayWithCapacity:7];
 	color = [UIColor colorWithRed:0.033 green:0.251 blue:0.673 alpha:1.0];
 	[colors2 addObject:(id)[color CGColor]];
 	color = [UIColor colorWithRed:0.66 green:0.701 blue:0.88 alpha:1.0];
@@ -320,6 +320,31 @@
                                        [NSNumber numberWithFloat:0.574f],
                                        [NSNumber numberWithFloat:0.541],
                                        [NSNumber numberWithFloat:0.185],
+                                       [NSNumber numberWithFloat:0.812f],
+                                       nil];*/
+    NSMutableArray *colors2 = [NSMutableArray arrayWithCapacity:7];
+	color = [UIColor colorWithRed:0.033 green:0.251 blue:0.673 alpha:1.0];
+	[colors2 addObject:(id)[color CGColor]];
+	color = [UIColor colorWithRed:0.66 green:0.701 blue:0.88 alpha:1.0];
+	[colors2 addObject:(id)[color CGColor]];
+	color = [UIColor colorWithRed:0.222 green:0.308 blue:0.709 alpha:1.0];
+	[colors2 addObject:(id)[color CGColor]];
+	color = [UIColor colorWithRed:0.145 green:0.231 blue:0.683 alpha:1.0];
+	[colors2 addObject:(id)[color CGColor]];
+	color = [UIColor colorWithRed:0.0 green:0.124 blue:0.621 alpha:1.0];
+	[colors2 addObject:(id)[color CGColor]];
+	color = [UIColor colorWithRed:0.011 green:0.181 blue:0.647 alpha:1.0];
+	[colors2 addObject:(id)[color CGColor]];
+	color = [UIColor colorWithRed:0.311 green:0.383 blue:0.748 alpha:1.0];
+	[colors2 addObject:(id)[color CGColor]];
+    self.highlightGradientColors = colors;
+    self.highlightGradientLocations = [NSMutableArray arrayWithObjects:
+                                       [NSNumber numberWithFloat:0.0f],
+                                       [NSNumber numberWithFloat:1.0f],
+                                       [NSNumber numberWithFloat:0.957f],
+                                       [NSNumber numberWithFloat:0.574f],
+                                       [NSNumber numberWithFloat:0.541],
+                                       [NSNumber numberWithFloat:0.185f],
                                        [NSNumber numberWithFloat:0.812f],
                                        nil];
     [self setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
