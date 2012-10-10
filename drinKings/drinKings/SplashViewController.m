@@ -127,11 +127,35 @@
 }
 
 - (void)displayCompany{
+    float w;
+    float h;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        w = self.view.frame.size.width;
+        h = self.view.frame.size.height;
+    }else{
+        if ([UIScreen mainScreen].bounds.size.width < [UIScreen mainScreen].bounds.size.height){
+            w = [UIScreen mainScreen].bounds.size.height;
+            h = [UIScreen mainScreen].bounds.size.width;
+        }else{
+            w = [UIScreen mainScreen].bounds.size.width;
+            h = [UIScreen mainScreen].bounds.size.height;
+        }
+    }
+    
     // fade company splash in
     _btnSplashCompany = [UIButton buttonWithType:UIButtonTypeCustom];
     _btnSplashCompany.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     _btnSplashCompany.adjustsImageWhenHighlighted=NO;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        
+        if(h>500){
+            DLog(@"big company");
+            [_btnSplashCompany setBackgroundImage:[UIImage imageNamed:@"Company-iphone-568h"] forState:UIControlStateNormal];
+        }else{
+            [_btnSplashCompany setBackgroundImage:[UIImage imageNamed:@"Company-iphone"] forState:UIControlStateNormal];
+        }
+        
         [_btnSplashCompany setBackgroundImage:[UIImage imageNamed:@"Company-iphone"] forState:UIControlStateNormal];
     }else{
         [_btnSplashCompany setBackgroundImage:[UIImage imageNamed:@"Company-ipad"] forState:UIControlStateNormal];
@@ -173,6 +197,14 @@
                          [self.navigationController pushViewController:main animated:NO];
                      }];
     
+}
+
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskLandscape;
+    else  /* iphone */
+        return UIInterfaceOrientationMaskPortrait;
 }
 
 @end

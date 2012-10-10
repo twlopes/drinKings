@@ -23,7 +23,7 @@
 
 @implementation GameBoardViewController
 
-@synthesize players=_players, currentCard=_currentCard, currentGameCard=_currentGameCard, currentDeck=_currentDeck;
+@synthesize players=_players, currentCard=_currentCard, currentGameCard=_currentGameCard, currentDeck=_currentDeck, delegate=_delegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,27 +38,54 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    
-    [self newGame];
 }
 
 - (void)newGame{
-    // setup the game, cards and players
-    [self setupGame];
     
-    // game board and elements
-    [self drawBoard];
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        DLog(@"start queue");
+        // Add code here to do background processing
+        //
+        //
+        
+        // setup the game, cards and players
+        [self setupGame];
+        
+        if([_currentGame.turn isEqualToNumber:[NSNumber numberWithInt:0]]){
+            // randomise the cards and give them positions
+            [self shuffleCards];
+        }
+        
+        
+        
+        
+        
+        dispatch_async( dispatch_get_main_queue(), ^{
+            DLog(@"done queue");
+            // Add code here to update the UI/send notifications based on the
+            // results of the background processing
+            
+            // UI needs to be done on main thread
+            // game board and elements
+            [self drawBoard];
+            
+            // update HUD
+            [self updateDisplay];
+            
+            // draw cards on board
+            [self dealCards];
+            
+            if([_delegate respondsToSelector:@selector(gameLoaded:)]){
+                [_delegate gameLoaded:self];
+            }
+        });
+    });
     
-    // update HUD
-    [self updateDisplay];
     
-    if([_currentGame.turn isEqualToNumber:[NSNumber numberWithInt:0]]){
-        // randomise the cards and give them positions
-        [self shuffleCards];
-    }
-    
-    // draw cards on board
-    [self dealCards];
+}
+
+- (void)gameLoaded:(GameBoardViewController*)board{
+    // too lazy to get rid of the above error/warning properly
 }
 
 - (void)viewDidUnload
@@ -107,6 +134,12 @@
     }
     
     [self displayNextPlayer];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [self updateDisplay];
+    
+    [_btnQuit useRedDeleteStyle];
 }
 
 #pragma mark - Setup
@@ -296,6 +329,8 @@
         gpView.ivPlayer.image = [UIImage imageWithData:p.player.photo];
         gpView.lblPlayer.text = p.player.name;
         
+        DLog(@"gamePlayer: %@", gpView.lblPlayer.text);
+        
         gpView.btnPlayer.tag=[p.playerTurn intValue];
         [gpView.btnPlayer addTarget:self action:@selector(touchPlayer:) forControlEvents:UIControlEventTouchUpInside];
         
@@ -477,6 +512,7 @@
         else
             theSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
     }
+    CGSize size = [CardsHelper sizeOfCard:theSize];
     
     //theSize.height = theSize.height - theSize.height/7;
     
@@ -518,7 +554,7 @@
         [layer addSublayer:shineLayer];*/
         
         
-        CGSize size = [CardsHelper sizeOfCard:theSize];
+        
         btn.frame = CGRectMake([gc.positionX floatValue], [gc.positionY floatValue], size.width, size.height);
         CGAffineTransform transform = CGAffineTransformMakeRotation([gc.rotation floatValue]);
         btn.transform = transform;
@@ -1114,6 +1150,8 @@
 }
 
 - (void)updateDisplay{
+    DLog(@"~");
+    
     if([_currentGame.players count]>0){
         
         int i=0;
@@ -1160,6 +1198,7 @@
             i++;
         }
     }
+    DLog(@"!");
 }
 
 - (void)nextTurn{
@@ -1224,6 +1263,14 @@
 - (void)quit{
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissModalViewControllerAnimated:YES];
+}
+
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskLandscape;
+    else  /* iphone */
+        return UIInterfaceOrientationMaskPortrait;
 }
 
 @end

@@ -144,9 +144,9 @@
     color = [UIColor colorWithRed:0.5 green:0.153 blue:0.152 alpha:1.0];
     [colors2 addObject:(id)[color CGColor]];
     color = [UIColor colorWithRed:0.388 green:0.004 blue:0.0 alpha:1.0];
-    [colors addObject:(id)[color CGColor]];
+    [colors2 addObject:(id)[color CGColor]];
     
-    self.highlightGradientColors = colors;
+    self.highlightGradientColors = colors2;
     self.highlightGradientLocations = [NSArray arrayWithObjects:
                                        [NSNumber numberWithFloat:0.0f],
                                        [NSNumber numberWithFloat:1.0f],

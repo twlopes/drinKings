@@ -33,7 +33,7 @@
     MBProgressHUD* hud;
 }
 
-@property (nonatomic,retain) UIPopoverController *popover;
+@property (nonatomic,strong) UIPopoverController *popover;
 @property (nonatomic,retain) Player *player;
 @property (nonatomic,retain) PlayerChoiceViewController *parent;
 

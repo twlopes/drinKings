@@ -24,7 +24,6 @@
 		86210BB9152F154D00E43BC4 /* back-iphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 86210BB5152F154D00E43BC4 /* back-iphone@2x.png */; };
 		8628FB3F151B2D2000184351 /* GameBoardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8628FB3E151B2D2000184351 /* GameBoardViewController.m */; };
 		8628FB48151B5F2400184351 /* RulesHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8628FB47151B5F2400184351 /* RulesHelper.m */; };
-		862A27ED15B5660100BA3993 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 862A27EB15B5660100BA3993 /* libTestFlight.a */; };
 		862A27EF15B5662400BA3993 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 862A27EE15B5662400BA3993 /* libz.dylib */; };
 		8639C53A15D3B66200AEA277 /* RulesListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8639C53915D3B66200AEA277 /* RulesListViewController.m */; };
 		8639C54215D3C50200AEA277 /* RuleCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8639C54115D3C50200AEA277 /* RuleCreateViewController.m */; };
@@ -37,6 +36,7 @@
 		8639C55915D412AE00AEA277 /* bgNav@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8639C55715D412AE00AEA277 /* bgNav@2x.png */; };
 		8639C55C15D413AF00AEA277 /* bgNav-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 8639C55A15D413AF00AEA277 /* bgNav-iPhone.png */; };
 		8639C55D15D413AF00AEA277 /* bgNav-iPhone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8639C55B15D413AF00AEA277 /* bgNav-iPhone@2x.png */; };
+		863D0763161158D400C9D26B /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 863D0761161158D400C9D26B /* libTestFlight.a */; };
 		86412009150C653D00017098 /* PlayerCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 86412008150C653D00017098 /* PlayerCellView.m */; };
 		86414E4615C21F7F0010D477 /* Deck.m in Sources */ = {isa = PBXBuildFile; fileRef = 86414E4515C21F7F0010D477 /* Deck.m */; };
 		86414E4A15C21F800010D477 /* Card.m in Sources */ = {isa = PBXBuildFile; fileRef = 86414E4915C21F800010D477 /* Card.m */; };
@@ -105,6 +105,7 @@
 		86B13D44159ACD6A00819A1D /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 86B13D3A159ACD6A00819A1D /* Icon@2x.png */; };
 		86B13D4D159AD2FD00819A1D /* Skins.m in Sources */ = {isa = PBXBuildFile; fileRef = 86B13D4C159AD2FD00819A1D /* Skins.m */; };
 		86B13D51159AD47E00819A1D /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 86B13D50159AD47E00819A1D /* GradientButton.m */; };
+		86C1EB7F162529CE003DE8A6 /* Company-iphone-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 86C1EB7E162529CE003DE8A6 /* Company-iphone-568h@2x.png */; };
 		86C3917B1521F5B60046DF03 /* Felt-Green.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 86C391741521F5B60046DF03 /* Felt-Green.jpg */; };
 		86C391831521FA910046DF03 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A4D02C150C632300A0D9FF /* QuartzCore.framework */; };
 		86C391841521FB520046DF03 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 86A4CF8F150C461800A0D9FF /* CoreGraphics.framework */; };
@@ -244,8 +245,6 @@
 		8628FB3E151B2D2000184351 /* GameBoardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameBoardViewController.m; sourceTree = "<group>"; };
 		8628FB46151B5F2400184351 /* RulesHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulesHelper.h; sourceTree = "<group>"; };
 		8628FB47151B5F2400184351 /* RulesHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RulesHelper.m; sourceTree = "<group>"; };
-		862A27EB15B5660100BA3993 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
-		862A27EC15B5660100BA3993 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		862A27EE15B5662400BA3993 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		8639C53815D3B66200AEA277 /* RulesListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulesListViewController.h; sourceTree = "<group>"; };
 		8639C53915D3B66200AEA277 /* RulesListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RulesListViewController.m; sourceTree = "<group>"; };
@@ -261,6 +260,8 @@
 		8639C55715D412AE00AEA277 /* bgNav@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bgNav@2x.png"; sourceTree = "<group>"; };
 		8639C55A15D413AF00AEA277 /* bgNav-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bgNav-iPhone.png"; sourceTree = "<group>"; };
 		8639C55B15D413AF00AEA277 /* bgNav-iPhone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bgNav-iPhone@2x.png"; sourceTree = "<group>"; };
+		863D0761161158D400C9D26B /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		863D0762161158D400C9D26B /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		86412007150C653D00017098 /* PlayerCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerCellView.h; sourceTree = "<group>"; };
 		86412008150C653D00017098 /* PlayerCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerCellView.m; sourceTree = "<group>"; };
 		86414E4415C21F7F0010D477 /* Deck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Deck.h; sourceTree = "<group>"; };
@@ -367,6 +368,7 @@
 		86B13D4C159AD2FD00819A1D /* Skins.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Skins.m; sourceTree = "<group>"; };
 		86B13D4F159AD47E00819A1D /* GradientButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
 		86B13D50159AD47E00819A1D /* GradientButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GradientButton.m; sourceTree = "<group>"; };
+		86C1EB7E162529CE003DE8A6 /* Company-iphone-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Company-iphone-568h@2x.png"; sourceTree = "<group>"; };
 		86C391741521F5B60046DF03 /* Felt-Green.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Felt-Green.jpg"; sourceTree = "<group>"; };
 		86C7DC7315BEB24F009AC3A2 /* HeldCardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeldCardView.h; sourceTree = "<group>"; };
 		86C7DC7415BEB24F009AC3A2 /* HeldCardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeldCardView.m; sourceTree = "<group>"; };
@@ -493,7 +495,7 @@
 				86A4CFC5150C504C00A0D9FF /* CoreData.framework in Frameworks */,
 				86A4CF8C150C461800A0D9FF /* UIKit.framework in Frameworks */,
 				86A4CF8E150C461800A0D9FF /* Foundation.framework in Frameworks */,
-				862A27ED15B5660100BA3993 /* libTestFlight.a in Frameworks */,
+				863D0763161158D400C9D26B /* libTestFlight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -548,8 +550,8 @@
 		862A27EA15B565F300BA3993 /* Testflight */ = {
 			isa = PBXGroup;
 			children = (
-				862A27EB15B5660100BA3993 /* libTestFlight.a */,
-				862A27EC15B5660100BA3993 /* TestFlight.h */,
+				863D0761161158D400C9D26B /* libTestFlight.a */,
+				863D0762161158D400C9D26B /* TestFlight.h */,
 			);
 			name = Testflight;
 			sourceTree = "<group>";
@@ -937,6 +939,7 @@
 				868E178315C153CD003025BC /* Company-ipad@2x.png */,
 				868E178415C153CD003025BC /* Company-iphone.png */,
 				868E178515C153CD003025BC /* Company-iphone@2x.png */,
+				86C1EB7E162529CE003DE8A6 /* Company-iphone-568h@2x.png */,
 				86C7DD5115BEDB54009AC3A2 /* defaultUser.png */,
 				86C7DD5215BEDB54009AC3A2 /* defaultUser@2x.png */,
 				86B13D2F159ACA8900819A1D /* Default-Landscape~ipad.png */,
@@ -1159,6 +1162,7 @@
 				868BDA0A15E6103C00853173 /* SPLURGE_.TTF in Resources */,
 				868BDA0B15E6103C00853173 /* SPLURGEB.TTF in Resources */,
 				860E8EA11606E221006EE82B /* Default-568h@2x.png in Resources */,
+				86C1EB7F162529CE003DE8A6 /* Company-iphone-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1311,7 +1315,7 @@
 					"\"$(SRCROOT)/drinKings\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C8DF1FFD-5263-4C24-961A-300243A49DF7";
+				PROVISIONING_PROFILE = "22561FAF-8C9C-4DA1-B50B-B73A7DF3EF97";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

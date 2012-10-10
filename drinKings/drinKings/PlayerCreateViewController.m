@@ -582,6 +582,7 @@
         }else{
             _picker = [[UIImagePickerController alloc] init];
             _picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            _picker.contentSizeForViewInPopover = CGSizeMake(320, 480);
             //_picker.mediaTypes =[UIImagePickerController availableMediaTypesForSourceType:_picker.sourceType];   
             _picker.delegate = self;
             _picker.allowsEditing=YES;
@@ -611,11 +612,14 @@
                 DLog(@"1 %@", _ivPlayer);
                 DLog(@"2 %@", _viewBG);
                 DLog(@"3 %@", _popover);
+                DLog(@"4 %@", _picker);
                 
                 [_popover presentPopoverFromRect:_ivPlayer.frame
                                               inView:_viewBG
                             permittedArrowDirections:UIPopoverArrowDirectionRight
                                             animated:YES];
+                
+                DLog(@"!");
             }
         }
         
@@ -848,5 +852,36 @@
     }
 }
 
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskLandscape;
+    else  /* iphone */
+        return UIInterfaceOrientationMaskPortrait;
+}
+
+/*- (NSUInteger) supportedInterfaceOrientations
+{
+    DLog(@"~");
+    //Because your app is only landscape, your view controller for the view in your
+    // popover needs to support only landscape
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        return UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight | UIInterfaceOrientationMaskPortrait;
+    }
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+    
+}
+
+- (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)w {
+    
+    DLog(@"~");
+    //Because your app is only landscape, your view controller for the view in your
+    // popover needs to support only landscape
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        return UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight | UIInterfaceOrientationMaskPortrait;
+    }
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+    
+}*/
 
 @end

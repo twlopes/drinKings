@@ -63,11 +63,18 @@
     
     bool _showingCard;
     bool _animatingCard;
+    
+    // call back
+    __weak id _delegate;
 }
 
 @property (nonatomic, retain) NSMutableArray *players;
 @property (nonatomic, retain) Card *currentCard;
 @property (nonatomic, retain) GameCard *currentGameCard;
 @property (nonatomic, retain) Deck *currentDeck;
+
+@property (weak) id delegate;
+
+- (void)newGame;
 
 @end

@@ -393,4 +393,12 @@
     //[pcvc release];
 }
 
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskLandscape;
+    else  /* iphone */
+        return UIInterfaceOrientationMaskPortrait;
+}
+
 @end

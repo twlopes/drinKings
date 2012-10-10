@@ -43,35 +43,72 @@
 }
 
 - (void)refreshItems{
-    NSManagedObjectContext *moc;
     
-    if (moc == nil) { 
-        DLog(@"nil");
-        moc = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]; 
-    }
-    
-    _arrayItems = (NSMutableArray*)[moc fetchObjectsForEntityName:@"Player"];
-    
-    DLog(@"arrayItems %@", _arrayItems);
-    
-    float w = self.view.frame.size.width;
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        if([_arrayItems count]<=1){
-            [_gv setGridFooterView:nil];
-        }else{
-            [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 80)]];
-        }
-    }else{
-        if([_arrayItems count]<=3){
-            [_gv setGridFooterView:nil];
-        }else{
-            [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 100)]];
-        }
-    }
-    
-    [_gv reloadData];
     [self playButtonTitle];
+    
+    if(_arrayItems==nil || [_arrayItems count]==0){
+        if(hud==nil){
+            hud = [[MBProgressHUD alloc] initWithView:self.view];
+        }
+        [self.view addSubview:hud];
+        
+        hud.mode = MBProgressHUDModeIndeterminate;
+        hud.animationType = MBProgressHUDAnimationZoom;
+        hud.userInteractionEnabled=NO;
+        
+        hud.delegate = (id<MBProgressHUDDelegate>)self;
+        hud.labelText = @"Loading...";
+        hud.hidden=NO;
+        hud.graceTime=0.0f;
+        [hud show:NO];
+        DLog(@"show hud");
+    }
+    
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSManagedObjectContext *moc;
+        
+        if (moc == nil) {
+            DLog(@"nil");
+            
+            moc = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+        }
+        
+        _arrayItems = (NSMutableArray*)[moc fetchObjectsForEntityName:@"Player"];
+        
+        DLog(@"arrayItems %@", _arrayItems);
+        
+        float w = self.view.frame.size.width;
+        float h = self.view.frame.size.height;
+        
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            if([_arrayItems count]<=1){
+                [_gv setGridFooterView:nil];
+            }else{
+                [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h/4)]];
+            }
+        }else{
+            if([_arrayItems count]<=3){
+                [_gv setGridFooterView:nil];
+            }else{
+                [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, self.view.frame.size.height/4)]];
+            }
+        }
+        
+        dispatch_async( dispatch_get_main_queue(), ^{
+            [hud hide:NO];
+            
+            [_gv reloadData];
+            
+            [self playButtonTitle];
+        });
+    });
+    
+    
+    
+    
+    
+    
+    
 }
 
 #pragma mark - View lifecycle
@@ -112,6 +149,11 @@
     }
     
     _gv = [[AQGridView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h/4)]];
+    }else{
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, self.view.frame.size.height/4)]];
+    }
     _gv.scrollsToTop = YES;
     //_gv.backgroundColor = [UIColor darkGrayColor];
     //_gv.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Felt-Green.jpg"]];
@@ -121,11 +163,7 @@
     _gv.dataSource = self;
     _gv.delegate = self;
     //[_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h/6)]];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 40)]];
-    }else{
-        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 100)]];
-    }
+    
     [self.view addSubview:_gv];
     
     if(_viewToolbar==nil){
@@ -204,7 +242,9 @@
     
     //_viewToolbar.frame = CGRectMake(0, h-h/4+5, w, h/4);
     
-    [self refreshItems];
+    if(_arrayItems==nil || [_arrayItems count]==0){
+        [self refreshItems];
+    }
 }
 
 
@@ -263,7 +303,7 @@
         hud.delegate = (id<MBProgressHUDDelegate>)self;
         hud.labelText = @"Loading...";
         hud.hidden=NO;
-        hud.graceTime=1.0f;
+        hud.graceTime=0.0f;
         [hud show:NO];
         DLog(@"show hud");
         
@@ -274,10 +314,14 @@
         board.currentDeck = deck;
         board.players = _chosenItems;
         board.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        
+        board.delegate = self;
+        [board newGame];
+        
         //self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         
         //[self.navigationController pushViewController:board animated:YES];
-        [self.navigationController presentModalViewController:board animated:YES];
+        
     }else{
         // need to get them to make a choice
         UIActionSheet *action = [[UIActionSheet alloc] initWithTitle:@"Please select a Deck to play with:"
@@ -298,6 +342,14 @@
         
         
     }
+}
+
+- (void)gameLoaded:(GameBoardViewController*)board{
+    
+    [hud hide:YES];
+    hud.delegate=nil;
+    
+    [self.navigationController presentModalViewController:board animated:YES];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
@@ -367,7 +419,15 @@
     UIBarButtonItem *done = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(disableEdit)];
     [self.navigationItem setRightBarButtonItem:done animated:YES];
     
+    [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)]];
     [_gv reloadData];
+    
+    
+    /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/5)]];
+    }else{
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 100)]];
+    }*/
     
     //float w = self.view.frame.size.width;
     //float h = self.view.frame.size.height;
@@ -394,7 +454,13 @@
     UIBarButtonItem *save = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(enableEdit)];
     [self.navigationItem setRightBarButtonItem:save animated:YES];
     
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/4)]];
+    }else{
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/4)]];
+    }
     [_gv reloadData];
+    
     
     //float w = self.view.frame.size.width;
     //float h = self.view.frame.size.height;
@@ -521,12 +587,17 @@
     }else{
         Player *aPlayer = [_arrayItems objectAtIndex:index-1];
         
+        PlayerCellView *pcell = (PlayerCellView*)[_gv cellForItemAtIndex:index];
+        
+        
         if([_chosenItems containsObject:aPlayer]){
             DLog(@"remove %@", aPlayer);
             [_chosenItems removeObject:aPlayer];
+            [pcell.player setBackgroundColor:[UIColor whiteColor]];
         }else{
             DLog(@"add %@", aPlayer);
             [_chosenItems addObject:aPlayer];
+            [pcell.player setBackgroundColor:[UIColor colorWithRed:81.0/256 green:102.0/265 blue:145.0/256 alpha:1.0]];
         }
         
         [self playButtonTitle];
@@ -537,7 +608,17 @@
     }
     
     [_gv deselectItemAtIndex:index animated:NO];
-    [_gv reloadData];
+    
+    /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/4)]];
+    }else{
+        [_gv setGridFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/4)]];
+    }
+    [_gv reloadData];*/
+    
+    
+    
+    DLog(@"!");
 }
 
 - (NSUInteger) numberOfItemsInGridView: (AQGridView *) aGridView
@@ -580,11 +661,11 @@
         cell.player.image.image = [UIImage imageWithData:aPlayer.photo];
         
         if([_chosenItems containsObject:aPlayer]){
-            DLog(@"contains %@", aPlayer);
+            DLog(@"contains %@", aPlayer.name);
             //[cell setSelected:YES];
             //cell.selected=YES;
         }else{
-            DLog(@"nope %@", aPlayer);
+            DLog(@"nope %@", aPlayer.name);
             //[cell setSelected:NO];
             //cell.selected=NO;
         }
@@ -603,7 +684,7 @@
             cell.btnDelete.hidden=YES;
         }
     }
-    
+    DLog(@"!");
     return ( cell );
 }
 

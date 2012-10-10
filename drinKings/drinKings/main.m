@@ -10,8 +10,21 @@
 
 #import "AppDelegate.h"
 
+#ifdef TESTING
+void eHandler(NSException *);
+
+void eHandler(NSException *exception) {
+    NSLog(@"%@", exception);
+    NSLog(@"%@", [exception callStackSymbols]);
+}
+#endif
+
 int main(int argc, char *argv[])
 {
+#ifdef TESTING
+    NSSetUncaughtExceptionHandler(&eHandler);
+#endif
+    
     @autoreleasepool {
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
     }

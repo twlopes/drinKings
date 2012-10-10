@@ -274,6 +274,21 @@ static AppDelegate *sharedInstance;
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
+-(NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskAll;
+    else  /* iphone */
+        return UIInterfaceOrientationMaskPortrait;
+}
+
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskLandscape;
+    else  /* iphone */
+        return UIInterfaceOrientationMaskPortrait;
+}
 
 @end
 
@@ -307,7 +322,7 @@ static AppDelegate *sharedInstance;
 }
 
 -(void)willMoveToWindow:(UIWindow *)newWindow{
-    DLog(@"~");
+    DLog(@"~ %@", newWindow);
     [super willMoveToWindow:newWindow];
     [self applyDefaultStyle];
 }
@@ -322,6 +337,35 @@ static AppDelegate *sharedInstance;
     //CGRect shadowPath = CGRectMake(self.layer.bounds.origin.x - 10, self.layer.bounds.origin.y, self.layer.bounds.size.width * 2 + 20, self.layer.bounds.size.height);
     //self.layer.shadowPath = [UIBezierPath bezierPathWithRect:shadowPath].CGPath;
     //self.layer.shouldRasterize = YES;
+}
+
+/*- (NSUInteger) supportedInterfaceOrientations
+{
+    DLog(@"~");
+    //Because your app is only landscape, your view controller for the view in your
+    // popover needs to support only landscape
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        return UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
+    }
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+    
+}*/
+
+@end
+
+@interface UINavigationController (RotateController)
+
+@end
+
+//Override For Custom Navigation Controller
+@implementation UINavigationController (RotateController)
+
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskLandscape;
+    else  /* iphone */
+        return UIInterfaceOrientationMaskPortrait;
 }
 
 @end

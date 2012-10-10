@@ -8,7 +8,7 @@
 #warning "This project uses features only available in iOS SDK 4.0 and later."
 #endif
 
-#define TESTING 1
+//#define TESTING 1
 
 #ifdef TESTING
  #define DLog(...) NSLog(@"%s %@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
