@@ -29,8 +29,6 @@ static AppDelegate *sharedInstance;
     _playersNeedRefreshing=YES;
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
-    //UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[MainViewController alloc] init]];
     
     [TestFlight takeOff:@"da7a12714a76721432ffe50b5b15b903_NzM5MzMyMDEyLTA2LTA2IDAzOjEwOjIwLjU4NzIyNw"];
     
@@ -38,29 +36,14 @@ static AppDelegate *sharedInstance;
     [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 #endif
     
-    /*UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[PlayerChoiceViewController alloc] init]];*/
     UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[SplashViewController alloc] init]];
     
     [CardsHelper setupCards];
-    
-    //self.viewController = [[MainViewController alloc] init];
-    
-    /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        self.viewController = [[twlViewController alloc] initWithNibName:@"twlViewController_iPhone" bundle:nil];
-    } else {
-        self.viewController = [[twlViewController alloc] initWithNibName:@"twlViewController_iPad" bundle:nil];
-    }*/
-    
-    /*if (self.managedObjectContext == nil) 
-    { 
-        __managedObjectContext = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]; 
-    }*/
     
     self.window.rootViewController = rootController;
     [self.window makeKeyAndVisible];
     
     if([UINavigationBar conformsToProtocol:@protocol(UIAppearance)]){
-        //[[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.18 green:0.35 blue:0.58 alpha:1.0]];
         [[UINavigationBar appearance] setTintColor:[Skins colorWithHexString:@"904f53"]];
         
         UIImage *gradientImage44;
@@ -85,10 +68,6 @@ static AppDelegate *sharedInstance;
                                            forBarMetrics:UIBarMetricsDefault];
         [[UINavigationBar appearance] setBackgroundImage:gradientImage32
                                            forBarMetrics:UIBarMetricsLandscapePhone];
-        
-        /*[[UINavigationBar appearance] setBackgroundImage:[UIImage skinImageNamed:gradientImage44] forBarMetrics:UIBarMetricsDefault];
-         
-         [[UINavigationBar appearance] setBackgroundImage:[UIImage skinImageNamed:gradientImage32] forBarMetrics:UIBarMetricsLandscapePhone];*/
         
     }
     

@@ -44,9 +44,7 @@
     
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         DLog(@"start queue");
-        // Add code here to do background processing
-        //
-        //
+        // background processing
         
         // setup the game, cards and players
         [self setupGame];
@@ -62,8 +60,6 @@
         
         dispatch_async( dispatch_get_main_queue(), ^{
             DLog(@"done queue");
-            // Add code here to update the UI/send notifications based on the
-            // results of the background processing
             
             // UI needs to be done on main thread
             // game board and elements
