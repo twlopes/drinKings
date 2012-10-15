@@ -20,10 +20,14 @@ static AppDelegate *sharedInstance;
 @synthesize managedObjectContext=__managedObjectContext;
 @synthesize managedObjectModel=__managedObjectModel;
 @synthesize persistentStoreCoordinator=__persistentStoreCoordinator;
+@synthesize playersNeedRefreshing=_playersNeedRefreshing;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     DLog(@"~");
+    
+    _playersNeedRefreshing=YES;
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     //UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:[[MainViewController alloc] init]];

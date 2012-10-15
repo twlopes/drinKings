@@ -404,6 +404,8 @@
     
     if(!error){
     
+        AppDelegate *ad = [AppDelegate sharedAppController];
+        ad.playersNeedRefreshing = YES;
         
         //AppDelegate *ac = [AppDelegate sharedAppController];
         NSManagedObjectContext *moc/* = [ac managedObjectContext]*/;

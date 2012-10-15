@@ -46,7 +46,9 @@
     
     [self playButtonTitle];
     
-    if(_arrayItems==nil || [_arrayItems count]==0){
+    AppDelegate *ad = [AppDelegate sharedAppController];
+    
+    if(_arrayItems==nil || ad.playersNeedRefreshing){
         if(hud==nil){
             hud = [[MBProgressHUD alloc] initWithView:self.view];
         }
@@ -100,6 +102,8 @@
             [_gv reloadData];
             
             [self playButtonTitle];
+            
+            ad.playersNeedRefreshing = NO;
         });
     });
     
@@ -242,9 +246,7 @@
     
     //_viewToolbar.frame = CGRectMake(0, h-h/4+5, w, h/4);
     
-    if(_arrayItems==nil || [_arrayItems count]==0){
-        [self refreshItems];
-    }
+    [self refreshItems];
 }
 
 
